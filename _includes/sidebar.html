@@ -18,16 +18,16 @@
   </div><!--//profile-container-->
 
   {% include contact.html %}
+  {% include language.html %}
 
   {% if sidebar.education %}
     {% include education.html %}
   {% endif %}
 
-  {% include language.html %}
-  {% include interests.html %}
-
-  {% if sidebar.about %}
-    {% include about.html %}
+  {% if sidebar.business %}
+    {% include business.html %}
   {% endif %}
+
+  {% include interests.html %}
 
 </div><!--//sidebar-wrapper-->
