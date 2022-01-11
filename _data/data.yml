@@ -29,41 +29,32 @@ sidebar:
 #        link:
 
 career-profile:
-    title: Career Profile
+    title: Profile
     summary: |
-      Summarise your career here lorem ipsum dolor sit amet, consectetuer
-      adipiscing elit. You can [download this free resume/CV template here]().
-      Aenean commodo ligula eget dolor aenean massa. Cum sociis natoque
-      penatibus et magnis dis parturient montes, nascetur ridiculus mus.
-      Donec quam felis, ultricies nec, pellentesque eu.
-      Second paragraph if required.
+      I started working with computers around the year 2000 and got into developing websites in 2004.
+      I discovered Drupal during the 4.7 / 5.4 era (2007) and stayed with it ever since.
+      
+      By working with various clients I gained lots of experience in site building, theming and even some sysadmin skills.
+      Since then I worked on some big sites.
+      
+      I'm best known as one of the leading members of Czech Drupal community. I'm passionate about using best practices and likes to discover new elegant solutions.
 education:
-    - degree: MSc in Computer Science
-      university: University of London
-      time: 2011 - 2012
+    - degree: Bachelor's degree in Computer Science
+      university: Czech Technical University in Prague
+      time: 2012
       details: |
-        Describe your study here lorem ipsum dolor sit amet, consectetuer
-        adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum
-        sociis natoque penatibus et magnis dis parturient montes, nascetur
-        ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu,
-        pretium quis, sem.
-          - Bullet point
-          - Bullet point
-    - degree: BSc in Applied Mathematics
-      university: Bristol University
-      time: 2007 - 2011
+        Faculty of Nuclear Sciences and Physical Engineering, Engineering in Informatics
+          - https://www.fjfi.cvut.cz/en
+    - degree: High school leaving examination in the Czech Republic
+      university: Secondary Technical School AGC a.s.
+      time: 2007
       details: |
-        Describe your study here lorem ipsum dolor sit amet, consectetuer
-        adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum
-        sociis natoque penatibus et magnis dis parturient montes, nascetur
-        ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu,
-        pretium quis, sem.
-          - Bullet point
-          - Bullet point
+        Information technology - application of personal computers
+          - https://www.skola-agc.cz
 experiences:
-    - role: Lead Developer
-      time: 2015 - Present
-      company: Startup Hubs, San Francisco
+    - role: Drupal Backend developer & DevOps
+      time: 2014 - Present
+      company: Morpht Pty. Ltd.
       details: |
         Describe your role here lorem ipsum dolor sit amet, consectetuer
         adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa.
@@ -76,9 +67,9 @@ experiences:
         architecto beatae vitae dicta sunt explicabo.
           - Bullet point
           - Bullet point
-    - role: Senior Software Engineer
-      time: 2014 - 2015
-      company: Google, London
+    - role: Drupal developer
+      time: 2011 - 2014
+      company: PLAYzone s. r. o.
       details: |
         Describe your role here lorem ipsum dolor sit amet, consectetuer
         adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa.
@@ -87,9 +78,9 @@ experiences:
         pellentesque eu, pretium quis, sem.
           - Bullet point
           - Bullet point
-    - role: UI Developer
-      time: 2012 - 2014
-      company: Amazon, London
+    - role: Drupal site builder
+      time: 2006 - 2011
+      company: Freelance
       details: |
         Describe your role here lorem ipsum dolor sit amet, consectetuer
         adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa.
@@ -170,4 +161,4 @@ skills:
         level: 60%
 
 footer: >
-    i<sup>2</sup> - keeping it real | Design by <a href="http://themes.3rdwavemedia.com" target="_blank" rel="nofollow">Xiaoying Riley</a>
+  <i class="fas fa-cookie-bite"></i> Cookies! May contain traces of nuts. | i<sup>2</sup> keeping it real | Design by <a href="http://themes.3rdwavemedia.com" target="_blank" rel="nofollow">Xiaoying Riley</a>
