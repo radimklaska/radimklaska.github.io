@@ -4,6 +4,11 @@
 
 Simple Jekyll site based on https://github.com/sharu725/online-cv
 
+## Visit the site
+
+* Production domain: https://klaska.net
+* GitHub domain: https://radimklaska.github.io
+
 ## Run site locally
 
 * See: https://jekyllrb.com/docs/#instructions
