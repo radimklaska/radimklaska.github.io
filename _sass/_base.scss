@@ -168,6 +168,9 @@ p {
     }
     .section {
         margin-bottom: 60px;
+        .img-thumbnail {
+            max-width: 150px;
+        }
     }
 
     .experiences-section, .educations-section {
@@ -225,16 +228,13 @@ p {
         color: $text-grey;
         margin-bottom: 1px;
     }
-    .publications-section {
-        .intro {
-            margin-bottom: 30px;
-        }
-        .item {
-            margin-bottom: 15px;
-        }
-    }
 }
 
+.vcenter {
+    display: inline-block;
+    vertical-align: middle;
+    float: none;
+}
 
 .skillset {
     .item {

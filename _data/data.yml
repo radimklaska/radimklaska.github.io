@@ -34,61 +34,50 @@ career-profile:
       I started working with computers around the year 2000 and got into developing websites in 2004.
       I discovered Drupal during the 4.7 / 5.4 era (2007) and stayed with it ever since.
       
-      By working with various clients I gained lots of experience in site building, theming and even some sysadmin skills.
-      Since then I worked on some big sites.
+      By working with various clients I gained lots of experience in site building, theming and even some Linux sysadmin skills.
+      Since then I worked on some big sites as a backend developer and slowly shifted towards DevOps and CI/CD.
       
-      I'm best known as one of the leading members of Czech Drupal community. I'm passionate about using best practices and likes to discover new elegant solutions.
+      I'm best known as one of the leading members of the Czech Drupal community. I'm passionate about using best practices
+      and likes to discover new elegant solutions.
+      
+      I'm an Open Source Enthusiast. This led me through some interesting side quests.
+      
+      Read on...
 education:
     - degree: Bachelor's degree in Computer Science
       university: Czech Technical University in Prague
       time: 2012
       details: |
         Faculty of Nuclear Sciences and Physical Engineering, Engineering in Informatics
-          - https://www.fjfi.cvut.cz/en
+          - [https://www.fjfi.cvut.cz/en](https://www.fjfi.cvut.cz/en)
     - degree: High school leaving examination in the Czech Republic
       university: Secondary Technical School AGC a.s.
       time: 2007
       details: |
         Information technology - application of personal computers
-          - https://www.skola-agc.cz
+          - [https://www.skola-agc.cz](https://www.skola-agc.cz)
 experiences:
     - role: Drupal Backend developer & DevOps
       time: 2014 - Present
       company: Morpht Pty. Ltd.
       details: |
-        Describe your role here lorem ipsum dolor sit amet, consectetuer
-        adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa.
-        Cum sociis natoque penatibus et magnis dis parturient montes,
-        nascetur ridiculus mus. Donec quam felis, ultricies nec,
-        pellentesque eu, pretium quis, sem. Nulla consequat massa quis
-        enim. Donec pede justo. Sed ut perspiciatis unde omnis iste natus
-        error sit voluptatem accusantium doloremque laudantium, totam rem
-        aperiam, eaque ipsa quae ab illo inventore veritatis et quasi
-        architecto beatae vitae dicta sunt explicabo.
-          - Bullet point
-          - Bullet point
+        I had a number of roles at [Morpht](https://www.morpht.com) over the years. I started as a Drupal developer and site builder.
+        Did my fair share of theme coding and form altering. Moved over to do more development. Currently, I manage and coordinate
+        security updates across all projects at Morpht. I'm also making sure all of our builds and tests are running smoothly and
+        all developers are set up for success with their local environments using [Lando](https://lando.dev). Automating as much as possible
+        from a developer setting up a local copy to production deployment.
     - role: Drupal developer
       time: 2011 - 2014
       company: PLAYzone s. r. o.
       details: |
-        Describe your role here lorem ipsum dolor sit amet, consectetuer
-        adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa.
-        Cum sociis natoque penatibus et magnis dis parturient montes,
-        nascetur ridiculus mus. Donec quam felis, ultricies nec,
-        pellentesque eu, pretium quis, sem.
-          - Bullet point
-          - Bullet point
+        Learned a lot by working with a great team, receiving code reviews, having a chance to architect solutions and watching projects grow.
     - role: Drupal site builder
       time: 2006 - 2011
       company: Freelance
       details: |
-        Describe your role here lorem ipsum dolor sit amet, consectetuer
-        adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa.
-        Cum sociis natoque penatibus et magnis dis parturient montes,
-        nascetur ridiculus mus. Donec quam felis, ultricies nec,
-        pellentesque eu, pretium quis, sem.
-          - Bullet point
-          - Bullet point
+        I was lucky to gain trust and awesome references from many clients. This was a steep learning curve while juggling meetings with clients,
+        working on sites and managing a small team of my schoolmates who helped me with design and site-building.
+        I also started managing my first [Aegir](https://www.aegirproject.org) server to host all client sites.
 projects:
     title: Projects
     intro: >
@@ -116,49 +105,27 @@ projects:
         link: "#"
         tagline: "A responsive Bootstrap one page theme designed to help app developers promote their mobile apps"
 
-#publications:
-#    title: Publications
-#    intro: |
-#      You can list your publications in this section. Lorem ipsum dolor sit
-#      amet, consectetur adipiscing elit. Vestibulum et ligula in nunc
-#      bibendum fringilla a eu lectus.
-#    papers:
-#      - title: The Art of Computer Programming
-#        link: "#"
-#        authors: Donald E. Knuth
-#        conference: Addison-Wesley, 1968
-#
-#      - title: "Genetic Programming III: Darwinian Invention &amp; Problem Solving"
-#        link: "#"
-#        authors: Koza, J.R., Andre, D., Bennett, F.H., Keane, M.A.
-#        conference: "Morgan Kaufmann Publishers Inc., San Francisco, CA, USA, 1st edn. (1999)"
-#
-#      - title: A syntax directed compiler for Algol 60
-#        link: "#"
-#        authors: Edgar T. Irons
-#        conference: "Comm. ACM 4 (1961), 51–55"
-
 skills:
     title: Skills &amp; Proficiency
 
     toolset:
-      - name: Python & Django
+      - name: Drupal ecosystem
         level: 98%
 
-      - name: Javascript & jQuery
-        level: 98%
+      - name: Drupal backend
+        level: 90%
 
-      - name: Angular
-        level: 98%
+      - name: Drupal frontend
+        level: 60%
 
-      - name: HTML5 & CSS
-        level: 95%
+      - name: Git, workflows, automation
+        level: 99%
 
-      - name: Ruby on Rails
-        level: 85%
+      - name: Linux, CLI, Bash
+        level: 90%
 
       - name: Sketch & Photoshop
-        level: 60%
+        level: 3%
 
 footer: >
   <i class="fas fa-cookie-bite"></i> Cookies! May contain traces of nuts. | i<sup>2</sup> keeping it real | Design by <a href="http://themes.3rdwavemedia.com" target="_blank" rel="nofollow">Xiaoying Riley</a>

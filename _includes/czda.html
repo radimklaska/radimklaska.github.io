@@ -1,0 +1,28 @@
+{% assign projects = site.data.data.projects %}
+{% if projects %}
+<section class="section projects-section">
+
+  <img class="img-thumbnail pull-right" src="{{ site.baseurl }}/assets/images/czda.png" alt="Czech Drupal Association">
+
+  <h2 class="section-title vcenter">
+      <span class="fa-stack fa-xs">
+      <i class="fas fa-circle fa-stack-2x"></i>
+      <i class="fab fa-drupal fa-stack-1x fa-inverse"></i>
+    </span>
+    Czech Drupal Association
+  </h2>
+
+  <div class="intro">
+      <p>Czech Drupal Association is a non-profit aiming to promote Drupal in the Czech Republic and support the existing community
+        mainly by providing free training, organizing community meetups and bigger events like drupal camps.</p>
+  </div><!--//intro-->
+
+  <div class="summary">
+    <p>I'm a founding member and a Chairman of the Czech Drupal Association. Trying to spark the local community again.
+    We organize all local events together with the much-needed help of my friends Miro, Martin and Petr.
+    I was also one of the main organizers of Drupal Iron Camp, Drupal CS camp and I volunteered at a number of DrupalCons.</p>
+    <p>More information: <a href="https://www.drupal.cz/assoc">https://www.drupal.cz/assoc</a></p>
+  </div>
+
+</section><!--//section-->
+{% endif %}
