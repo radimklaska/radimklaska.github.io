@@ -6,7 +6,9 @@ url: 'https://klaska.net'
 
 #change it according to your repository name
 # disabling since we are using a custom domain
-#baseurl: '/online-cv' 
+#baseurl: '/online-cv'
+
+include: [".well-known"]
 
 description: Drupal geek since 5.4 (It was 2007, right?)
 # Style will be applied only after restarting the build or serve. Just choose one of the options.
