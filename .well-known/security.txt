@@ -1,5 +1,24 @@
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA512
+
 Contact: mailto:radim@klaska.net
 Contact: mailto:radim.klaska@gmail.com
 Expires: 2100-12-31T11:59:00.000Z
 Encryption: https://github.com/radimklaska.gpg
 Preferred-Languages: en, cz
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCgAdFiEEoUCP4d+lcbJRIxIevN4RN2zISbsFAmXV5DgACgkQvN4RN2zI
+Sbsozw/9H7G5xOqsCxqkOeAiHksi369RknI4wKNh8EqyJaPsVXo6gGUEU2j7ogVS
+NHMXVLgwiBzE6VCBtzqlBVQh2lp4okM5t5xwlrIN7Yp8qDAVNPBlmSKA1L8bbZjo
+FIIPA1JMM7T87LevRjEYQhCGy7B6C3ioCuhzuMQeGU1bOGCF9qoREkA9RzZDY1fB
+UZROIPukutY4plurTPPRlQvSAO7cIJROCmpzUB7fsjYCn6TP0gcRjfOB0KiEjcao
+b4J7PNBu7012qkYN32ZCPD4MG9fVOHVm7gmO2nIxRZfg5hQ9wknvVLW78TZOeJNu
+U7/RzqpgyMLwu5PL86APK38HQtlkrdCvz6LxlA80BGz0OkXrHMgrvKJxC44d4LSW
+ni28Y2PfJwSqO2KnM2FgKXeuk64faFEbGqd6k9TiHQA1fST/Pas/upkHDl8CaCIN
+JexXc6mMd/dUDuuTebDHREa98wHFD1oLGYUZlg2qibRbYVHJC2g2tiDerBRY3XWd
+7JcP1RpGuzmmkGx6RJt1upwxvGL7EyP6wJElYAaevkvTCNgAf1GPQg3Z8+zdFser
+QApu9wCHO1f5LyKCdMRv4JfmSjcnLGat5YFSt733jyl7AJJwSMmeSoKRQqjCz7JC
+qveApw0qYmQrGS8fSqEUH32wFG6aGeRcWj/EPVqQ+c7/2bpcJZg=
+=HCVe
+-----END PGP SIGNATURE-----
