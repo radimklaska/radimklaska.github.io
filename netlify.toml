@@ -1,0 +1,23 @@
+[build]
+  # Build command for Jekyll
+  command = "bundle exec jekyll build"
+
+  # Directory where Jekyll outputs the built site
+  publish = "_site"
+
+  # Environment variables for build
+  [build.environment]
+    RUBY_VERSION = "2.3.3"
+    JEKYLL_ENV = "production"
+
+# Build settings for deploy previews (PRs)
+[context.deploy-preview]
+  command = "bundle exec jekyll build --baseurl $DEPLOY_PRIME_URL"
+
+# Build settings for branch deploys
+[context.branch-deploy]
+  command = "bundle exec jekyll build"
+
+# Plugin configuration (if needed in future)
+[[plugins]]
+  package = "@netlify/plugin-lighthouse"
