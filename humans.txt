@@ -1,0 +1,20 @@
+/* TEAM */
+
+Developer & Site Owner: Radim Klaška
+Contact: radim [at] klaska.net
+Twitter: @radimklaska
+Location: Czech Republic
+
+/* THANKS */
+
+Original Template: online-cv by Xiaoying Riley
+Template URL: https://github.com/sharu725/online-cv
+
+/* SITE */
+
+Last update: 2025/11/14
+Standards: HTML5, CSS3, Liquid
+Components: Jekyll, Bootstrap, SCSS
+Software: Jekyll 4.3.4, Ruby 3.3.6
+Deployment: GitHub Pages, GitHub Actions
+Repository: https://github.com/radimklaska/radimklaska.github.io

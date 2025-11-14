@@ -5,7 +5,7 @@ Contact: mailto:radim@klaska.net
 Contact: mailto:radim.klaska@gmail.com
 Expires: 2100-12-31T11:59:00.000Z
 Encryption: https://github.com/radimklaska.gpg
-Preferred-Languages: en, cz
+Preferred-Languages: en, cs
 -----BEGIN PGP SIGNATURE-----
 
 iQIzBAEBCgAdFiEEoUCP4d+lcbJRIxIevN4RN2zISbsFAmXV5DgACgkQvN4RN2zI

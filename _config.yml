@@ -36,3 +36,16 @@ compress_html: # - http://jch.penibelst.de/
 port: 4000
 host: 0.0.0.0
 safe: false
+
+# Exclude documentation and development files from published site
+exclude:
+  - CLAUDE.md
+  - README.md
+  - NETLIFY_SETUP.md
+  - Gemfile
+  - Gemfile.lock
+  - bin/
+  - vendor/
+  - .gitignore
+  - .ruby-version
+  - netlify.toml
