@@ -25,7 +25,7 @@ layout: default
 
       <span class="project-title">
         {% if item.link %}
-        <a href="{{ item.link }}" target="_blank" rel="nofollow sponsored noopener">{{ item.title }}</a>
+        <a href="{{ item.link }}" target="_blank" rel="{% if item.sponsored == false %}noopener{% else %}nofollow sponsored noopener{% endif %}">{{ item.title }}</a>
         {% else %}
         {{ item.title }}
         {% endif %}

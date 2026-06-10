@@ -162,5 +162,12 @@ affiliate:
           The same exchange on its EU-regulated (MiCA) platform — use this one
           if you are signing up from the European Union.
 
+      - title: Windy.com
+        link: https://www.windy.com/
+        sponsored: false
+        description: >
+          Great weather visualization and forecasting service with Czech roots.
+          No referral bonus here — I just recommend it.
+
 footer: >
   <i class="fas fa-cookie-bite"></i> Cookies! <a href="https://www.youtube.com/watch?v=gYwf_HvnBhA" target="_blank">May contain traces of nuts.</a> | i<sup>2</sup> keeping it real | Design by <a href="http://themes.3rdwavemedia.com" target="_blank" rel="nofollow">Xiaoying Riley</a>
