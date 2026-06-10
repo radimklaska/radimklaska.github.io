@@ -34,6 +34,11 @@ p {
     margin: 0 auto;
     position: relative;
     @include box-shadow(0px 2px 4px rgba(0,0,0,0.1));
+    /* Flex columns keep the sidebar background full height even when the
+       main content is shorter than the sidebar (e.g. on subpages). */
+    @media (min-width: 768px) {
+        display: flex;
+    }
 }
 
 .sidebar-wrapper {
@@ -44,6 +49,12 @@ p {
     height: 100%;
     min-height: 800px;
     color: #fff;
+    @media (min-width: 768px) {
+        position: static;
+        height: auto;
+        flex: 0 0 280px;
+        order: 2;
+    }
     a {
         color: #fff;
     }
@@ -157,6 +168,11 @@ p {
     background: #fff;
     padding: 60px;
     padding-right: 340px;
+    @media (min-width: 768px) {
+        flex: 1 1 auto;
+        min-width: 0;
+        padding-right: 60px;
+    }
     .section-title {
         text-transform: uppercase;
         font-size: 20px;
