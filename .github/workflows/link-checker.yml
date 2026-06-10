@@ -28,7 +28,7 @@ jobs:
       - name: Check links
         uses: lycheeverse/lychee-action@v2
         with:
-          args: '--no-progress --root-dir _site/ --exclude linkedin.com --exclude reddit.com --exclude instagram.com --exclude timeanddate.com --exclude /onewheel _site/'
+          args: '--no-progress --root-dir _site/ --exclude linkedin.com --exclude reddit.com --exclude instagram.com --exclude timeanddate.com --exclude alza.cz --exclude /onewheel _site/'
           fail: true
 
       - name: Notify Discord on failure

@@ -127,5 +127,66 @@ skills:
       - name: Sketch & Photoshop
         level: 3%
 
+affiliate:
+    title: Affiliate links
+    intro: >
+      Products and services I use and can recommend. If you sign up or buy
+      through one of these links, I may get a small commission or we both
+      receive a bonus — at no extra cost to you.
+    # Item format:
+    # - title: Service name
+    #   link: https://example.com/referral-code
+    #   description: What the service is and what you get by using the link.
+    links:
+      - title: Mana drink
+        link: https://refrr.app/6p2N8yuJtl/45592
+        description: >
+          Nutritionally complete meal drink — powders and ready-to-drink bottles.
+          Join through this link and you get a 100 Kč discount on your order.
+
+      - title: Starlink
+        link: https://starlink.com/residential?referral=RC-DF-12556880-28548-8
+        description: >
+          Satellite internet that works almost anywhere. Sign up through this
+          link and we each get one month of service free, 30 days after activation.
+
+      - title: Bybit
+        link: https://www.bybit.com/invite?ref=K7MOVY&medium=referral&utm_campaign=evergreen&shareTo=link
+        description: >
+          Cryptocurrency exchange for spot and derivatives trading. Sign up
+          through this link to unlock new-user rewards.
+
+      - title: Bybit EU
+        link: https://www.bybit.eu/invite?ref=NON0G5V&medium=referral&utm_campaign=evergreen&shareTo=link
+        description: >
+          The same exchange on its EU-regulated (MiCA) platform — use this one
+          if you are signing up from the European Union.
+
+      - title: Vyfakturuj.cz
+        link: https://www.vyfakturuj.cz/?utm=gbwsg601
+        description: >
+          Czech online invoicing service — create and send invoices, automate
+          payments, reminders and accounting exports.
+
+      - title: SimpleShop
+        link: https://www.simpleshop.cz/?utm=gbwsg601
+        description: >
+          Simple Czech e-shop platform for selling products, services and
+          digital content — from the makers of Vyfakturuj.cz.
+
+      - title: AlzaPlus+
+        link: https://www.alza.cz/alzaplus-referral?referralCode=deMrro7pguMW
+        description: >
+          Membership programme of Alza, the biggest Czech electronics e-shop —
+          free delivery and member-only discounts. Use this link with code
+          deMrro7pguMW to get 20% off the annual membership.
+
+      - title: Windy.com
+        link: https://www.windy.com/
+        sponsored: false
+        description: >
+          Great weather visualization and forecasting service with Czech roots.
+          No referral bonus here — I just recommend it.
+
 footer: >
   <i class="fas fa-cookie-bite"></i> Cookies! <a href="https://www.youtube.com/watch?v=gYwf_HvnBhA" target="_blank">May contain traces of nuts.</a> | i<sup>2</sup> keeping it real | Design by <a href="http://themes.3rdwavemedia.com" target="_blank" rel="nofollow">Xiaoying Riley</a>
