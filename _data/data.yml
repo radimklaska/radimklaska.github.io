@@ -162,6 +162,18 @@ affiliate:
           The same exchange on its EU-regulated (MiCA) platform — use this one
           if you are signing up from the European Union.
 
+      - title: Vyfakturuj.cz
+        link: https://www.vyfakturuj.cz/?utm=gbwsg601
+        description: >
+          Czech online invoicing service — create and send invoices, automate
+          payments, reminders and accounting exports.
+
+      - title: SimpleShop
+        link: https://www.simpleshop.cz/?utm=gbwsg601
+        description: >
+          Simple Czech e-shop platform for selling products, services and
+          digital content — from the makers of Vyfakturuj.cz.
+
       - title: Windy.com
         link: https://www.windy.com/
         sponsored: false
