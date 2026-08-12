@@ -188,5 +188,20 @@ affiliate:
           Great weather visualization and forecasting service with Czech roots.
           No referral bonus here — I just recommend it.
 
+pay:
+    title: Pay
+    intro: >
+      Ways to send me money. If you were expecting a different method,
+      just ask.
+    # Item format:
+    # - title: Method name
+    #   link: https://example.com/handle
+    #   description: What it is and when to use it.
+    methods:
+      - title: PayPal.me/radimklaska
+        link: https://www.paypal.me/radimklaska
+        description: >
+          Pay by card or from a PayPal balance, in any currency.
+
 footer: >
   <i class="fas fa-cookie-bite"></i> Cookies! <a href="https://www.youtube.com/watch?v=gYwf_HvnBhA" target="_blank">May contain traces of nuts.</a> | i<sup>2</sup> keeping it real | Design by <a href="http://themes.3rdwavemedia.com" target="_blank" rel="nofollow">Xiaoying Riley</a>
