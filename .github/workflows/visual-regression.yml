@@ -1,0 +1,144 @@
+name: Visual regression
+
+# Runs ONLY when the toolchain changes - dependencies, site config, templates,
+# styles, plugins, or the workflows themselves. Deliberately not on content changes:
+# editing a page is *supposed* to change how it looks, so a diff against production
+# would be noise. When only the toolchain moves, the rendered pages should be
+# pixel-identical, and anything that is not is worth a human looking at.
+#
+# Note _data/** is absent on purpose. Unlike the onewheel repo this is copied from,
+# where _data holds navigation config, here _data/data.yml is the site's entire
+# content store, so a change to it is a content change.
+on:
+  pull_request:
+    branches: ["main"]
+    paths:
+      - 'Gemfile'
+      - 'Gemfile.lock'
+      - '.ruby-version'
+      - '_config.yml'
+      - '_includes/**'
+      - '_layouts/**'
+      - '_plugins/**'
+      - '_sass/**'
+      - 'assets/css/**'
+      - 'netlify.toml'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'playwright.config.js'
+      - 'tests/**'
+      - '.github/workflows/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  compare:
+    runs-on: ubuntu-latest
+    env:
+      PROD_URL: https://klaska.net
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Resolve the deploy preview URL
+        id: preview
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          if [ -z "$PR_NUMBER" ]; then
+            echo "No PR number (manual run); nothing to compare." >&2
+            echo "skip=true" >> "$GITHUB_OUTPUT"; exit 0
+          fi
+          echo "url=https://deploy-preview-${PR_NUMBER}--klaskanet.netlify.app" >> "$GITHUB_OUTPUT"
+
+      # Netlify builds independently of this workflow, so the preview may not exist yet.
+      # Poll rather than assume, and fail with a clear message instead of screenshotting
+      # a 404 page and reporting it as a visual difference.
+      - name: Wait for the deploy preview
+        if: steps.preview.outputs.skip != 'true'
+        env:
+          URL: ${{ steps.preview.outputs.url }}
+        run: |
+          for i in $(seq 1 60); do
+            code=$(curl -s -o /dev/null -w '%{http_code}' -m 20 "$URL/" || true)
+            if [ "$code" = "200" ]; then echo "Preview ready after ${i} attempt(s)."; exit 0; fi
+            echo "attempt $i: HTTP $code, waiting..."
+            sleep 10
+          done
+          echo "::error::Deploy preview $URL did not become ready within ~10 minutes."
+          exit 1
+
+      - name: Setup Ruby
+        if: steps.preview.outputs.skip != 'true'
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version-file: '.ruby-version'
+          bundler-cache: true
+
+      # This site has no sitemap.xml, so the page list comes from a local build.
+      # Crawling the preview would be the other option, but /pay/ is deliberately
+      # unlinked and a crawler would never reach it.
+      - name: Build the page list
+        if: steps.preview.outputs.skip != 'true'
+        env:
+          JEKYLL_ENV: production
+        run: |
+          bundle exec jekyll build
+          python3 - <<'PY'
+          import json, os, re, sys
+          paths = []
+          skipped = []
+          for root, _, files in os.walk('_site'):
+              for f in files:
+                  if not f.endswith('.html'):
+                      continue
+                  full = os.path.join(root, f)
+                  # A meta-refresh page jumps to an absolute production URL, so both
+                  # sides would screenshot the same page. Nothing to compare.
+                  head = open(full, encoding='utf-8', errors='replace').read(4096)
+                  rel = '/' + os.path.relpath(full, '_site').replace(os.sep, '/')
+                  if re.search(r'http-equiv=["\']?refresh', head, re.I):
+                      skipped.append(rel)
+                      continue
+                  paths.append(re.sub(r'/index\.html$', '/', rel))
+          paths = sorted(set(paths))
+          if not paths:
+              print('::error::No pages found in _site', file=sys.stderr)
+              sys.exit(1)
+          os.makedirs('tests', exist_ok=True)
+          json.dump(paths, open('tests/pages.json', 'w'), indent=1)
+          print(f'{len(paths)} page(s): ' + ', '.join(paths))
+          if skipped:
+              print('skipped (redirects): ' + ', '.join(skipped))
+          PY
+
+      - name: Setup Node
+        if: steps.preview.outputs.skip != 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install dependencies
+        if: steps.preview.outputs.skip != 'true'
+        run: |
+          npm install --no-audit --no-fund
+          npx playwright install --with-deps chromium
+
+      - name: Compare preview against production
+        if: steps.preview.outputs.skip != 'true'
+        env:
+          PREVIEW_URL: ${{ steps.preview.outputs.url }}
+        run: npx playwright test
+
+      - name: Upload diffs
+        if: failure() && steps.preview.outputs.skip != 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: visual-diffs
+          path: |
+            visual-diffs/
+            playwright-report/
+          retention-days: 14
+          if-no-files-found: ignore
