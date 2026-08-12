@@ -1,0 +1,49 @@
+---
+layout: default
+title: Pay
+noindex: true
+---
+
+{% assign pay = site.data.data.pay %}
+{% if pay %}
+<section class="section pay-section">
+
+  <h2 class="section-title">
+    <span class="fa-stack fa-xs">
+      <i class="fas fa-circle fa-stack-2x"></i>
+      <i class="fas fa-hand-holding-usd fa-stack-1x fa-inverse"></i>
+    </span>
+    {{ pay.title }}
+  </h2>
+
+  {% if pay.intro %}
+  <div class="intro">
+      <p>{{ pay.intro }}</p>
+  </div><!--//intro-->
+  {% endif %}
+
+  {% if pay.note %}
+  <p class="pay-note">{{ pay.note }}</p>
+  {% endif %}
+
+  {% for item in pay.methods %}
+    <div class="item">
+
+      <h3>{{ item.title }}</h3>
+
+      {% if item.link %}
+      <p class="pay-link">
+        <a href="{{ item.link }}" target="_blank" rel="noopener">{{ item.link }}</a>
+      </p>
+      {{ item.link | qr_svg: item.title }}
+      {% endif %}
+
+      {% if item.description %}
+      <p class="project-tagline">{{ item.description }}</p>
+      {% endif %}
+
+    </div><!--//item-->
+  {% endfor %}
+
+</section><!--//section-->
+{% endif %}

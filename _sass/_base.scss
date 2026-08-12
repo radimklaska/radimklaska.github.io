@@ -233,6 +233,33 @@ p {
         }
     }
 
+    .pay-section {
+        .intro {
+            margin-bottom: 20px;
+        }
+        // Paying an invoice to the wrong account is a real cost, so this
+        // needs to be read before the methods below it, not skimmed past.
+        .pay-note {
+            border-left: 3px solid $theme-color;
+            padding: 2px 0 2px 15px;
+            margin-bottom: 30px;
+            color: $text-color;
+        }
+        .item {
+            margin-bottom: 35px;
+        }
+        .pay-link {
+            margin-bottom: 8px;
+            word-break: break-all;
+        }
+        // Sized here rather than on the SVG, which carries only a viewBox.
+        .qr-code {
+            display: block;
+            width: 132px;
+            height: 132px;
+        }
+    }
+
     .publication-title {
         font-size: 16px;
         font-weight: 400;
