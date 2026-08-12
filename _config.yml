@@ -49,3 +49,11 @@ exclude:
   - .gitignore
   - .ruby-version
   - netlify.toml
+  # Visual regression tooling
+  - package.json
+  - package-lock.json
+  - playwright.config.js
+  - playwright-report
+  - test-results
+  - visual-diffs
+  - tests
