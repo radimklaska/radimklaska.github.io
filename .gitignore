@@ -3,3 +3,11 @@ _site/
 .jekyll-metadata
 .jekyll-cache
 vendor
+
+# Visual regression tooling
+node_modules/
+package-lock.json
+test-results/
+playwright-report/
+visual-diffs/
+tests/pages.json
