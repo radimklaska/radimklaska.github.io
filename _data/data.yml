@@ -204,6 +204,12 @@ pay:
           Instant and free from another Revolut account. Card payments
           work too.
 
+      - title: Wise
+        link: https://wise.com/pay/me/radimk10
+        description: >
+          Good for currencies other than CZK — real exchange rate and
+          low fees. Free from another Wise account.
+
       - title: PayPal.me/radimklaska
         link: https://www.paypal.me/radimklaska
         description: >
