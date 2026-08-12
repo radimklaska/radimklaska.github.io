@@ -25,13 +25,11 @@ noindex: true
   {% for item in pay.methods %}
     <div class="item">
 
-      <span class="project-title">
-        {% if item.link %}
-        <a href="{{ item.link }}" target="_blank" rel="noopener">{{ item.title }}</a>
-        {% else %}
-        {{ item.title }}
-        {% endif %}
-      </span>
+      <span class="project-title">{{ item.title }}</span>
+
+      {% if item.link %}
+      <a href="{{ item.link }}" target="_blank" rel="noopener">{{ item.link }}</a>
+      {% endif %}
 
       {% if item.description %}
       - <span class="project-tagline">{{ item.description }}</span>
