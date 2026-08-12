@@ -18,6 +18,10 @@ group :jekyll_plugins do
   gem "jekyll-feed", "~> 0.17"
 end
 
+# Used by _plugins/qr_code.rb to render payment QR codes at build time.
+# Pure Ruby, no native extensions.
+gem "rqrcode", "~> 2.2"
+
 # Windows and JRuby does not include zoneinfo files, so bundle the tzinfo-data gem
 # and associated library.
 platforms :mingw, :x64_mingw, :mswin, :jruby do

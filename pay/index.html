@@ -6,7 +6,7 @@ noindex: true
 
 {% assign pay = site.data.data.pay %}
 {% if pay %}
-<section class="section projects-section">
+<section class="section pay-section">
 
   <h2 class="section-title">
     <span class="fa-stack fa-xs">
@@ -25,14 +25,17 @@ noindex: true
   {% for item in pay.methods %}
     <div class="item">
 
-      <span class="project-title">{{ item.title }}</span>
+      <h3>{{ item.title }}</h3>
 
       {% if item.link %}
-      <a href="{{ item.link }}" target="_blank" rel="noopener">{{ item.link }}</a>
+      <p class="pay-link">
+        <a href="{{ item.link }}" target="_blank" rel="noopener">{{ item.link }}</a>
+      </p>
+      {{ item.link | qr_svg: item.title }}
       {% endif %}
 
       {% if item.description %}
-      - <span class="project-tagline">{{ item.description }}</span>
+      <p class="project-tagline">{{ item.description }}</p>
       {% endif %}
 
     </div><!--//item-->

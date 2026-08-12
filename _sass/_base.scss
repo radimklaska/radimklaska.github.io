@@ -233,6 +233,25 @@ p {
         }
     }
 
+    .pay-section {
+        .intro {
+            margin-bottom: 30px;
+        }
+        .item {
+            margin-bottom: 35px;
+        }
+        .pay-link {
+            margin-bottom: 8px;
+            word-break: break-all;
+        }
+        // Sized here rather than on the SVG, which carries only a viewBox.
+        .qr-code {
+            display: block;
+            width: 132px;
+            height: 132px;
+        }
+    }
+
     .publication-title {
         font-size: 16px;
         font-weight: 400;
