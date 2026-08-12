@@ -193,6 +193,10 @@ pay:
     intro: >
       Ways to send me money. If you were expecting a different method,
       just ask.
+    note: >
+      Personal payments only — splitting a bill, paying me back, a gift.
+      For anything business related, please use the payment details on
+      the invoice instead.
     # Item format:
     # - title: Method name
     #   link: https://example.com/handle    # optional, shown as-is

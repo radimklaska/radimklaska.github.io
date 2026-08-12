@@ -22,6 +22,10 @@ noindex: true
   </div><!--//intro-->
   {% endif %}
 
+  {% if pay.note %}
+  <p class="pay-note">{{ pay.note }}</p>
+  {% endif %}
+
   {% for item in pay.methods %}
     <div class="item">
 
