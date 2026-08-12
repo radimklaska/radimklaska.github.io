@@ -198,6 +198,12 @@ pay:
     #   link: https://example.com/handle
     #   description: What it is and when to use it.
     methods:
+      - title: Revolut.me/radimklaska
+        link: https://revolut.me/radimklaska
+        description: >
+          Instant and free from another Revolut account. Card payments
+          work too.
+
       - title: PayPal.me/radimklaska
         link: https://www.paypal.me/radimklaska
         description: >
