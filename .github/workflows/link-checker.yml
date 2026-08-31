@@ -31,7 +31,9 @@ jobs:
           # slack.com rate-limits the runner: the sidebar carries three
           # slack links and is rendered on every page, so the request count
           # grows with the site and returns intermittent 403s.
-          args: '--no-progress --root-dir _site/ --exclude linkedin.com --exclude reddit.com --exclude instagram.com --exclude timeanddate.com --exclude alza.cz --exclude slack.com --exclude /onewheel _site/'
+          # morpht.com returns 403 Forbidden to the runner (bot blocking),
+          # so it cannot be verified from CI.
+          args: '--no-progress --root-dir _site/ --exclude linkedin.com --exclude reddit.com --exclude instagram.com --exclude timeanddate.com --exclude alza.cz --exclude slack.com --exclude morpht.com --exclude /onewheel _site/'
           fail: true
 
       - name: Notify Discord on failure
