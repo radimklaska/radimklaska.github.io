@@ -207,6 +207,10 @@ pay:
 
       - title: PayPal
         link: https://www.paypal.me/radimklaska
+        description: >
+          When PayPal asks what the payment is for, choose “Sending to a
+          friend” (friends and family), not “Paying for an item or service”
+          (goods and services) — that one costs me a fee.
 
       - title: Wise
         link: https://wise.com/pay/me/radimk10
