@@ -1,0 +1,39 @@
+# Radim Klaška
+
+> Drupal backend developer, security and DevOps engineer from Teplice, Czech Republic. Building websites since 2004 and Drupal sites since 2007; at Morpht since 2014. Founding member and chairman of the Czech Drupal Association.
+
+## Profile
+
+- Work: Drupal backend developer & DevOps at [Morpht](https://www.morpht.com) (2014 to present). Coordinates security updates across all Morpht projects, keeps builds and tests running, and sets developers up with local environments (Lando). Before that: Drupal developer at PLAYzone (2011-2014), freelance Drupal site builder (2006-2011).
+- Community: founding member and chairman of the [Czech Drupal Association](https://www.drupal.cz/assoc); organiser of Drupal Iron Camp and Drupal CS camp, volunteer at DrupalCons.
+- Side quests: reverse engineering Onewheel boards (BMS firmware decompiled and documented), one of the few people repairing Onewheels in Europe.
+- Education: Bachelor's degree in Computer Science, Czech Technical University in Prague (2012).
+- Languages: Czech (native), English (working professional).
+
+## Services
+
+- [Vaše IT oddělení](https://it.klaska.net/): external IT department for small businesses (Czech)
+- [Malá stránka](https://malastranka.cz/): simple websites for small businesses (Czech)
+
+Business ID (IČO) 88124444, not a VAT payer. Office: Cowosedlice.cz, Míru 218, 417 31 Novosedlice, Czech Republic.
+
+## Projects
+
+- [Trailbus.eu](https://trailbus.eu): his camper van and van trips
+- [VanAssistant](https://vanassistant.eu): Home Assistant for camper vans
+- [Onewheel notes](https://klaska.net/onewheel/)
+- [DCA Futures Bot Calculator](https://dcacalc.com/)
+- [Crypto Watchlists](https://cryptowatchlists.net/)
+
+## Contact
+
+- E-mail: radim@klaska.net
+- [LinkedIn](https://linkedin.com/in/radimklaska)
+- [GitHub](https://github.com/radimklaska)
+- [Drupal.org](https://www.drupal.org/u/radimklaska)
+- PGP key: https://github.com/radimklaska.gpg
+
+## Pages
+
+- [Profile](https://klaska.net/): CV, business details, contact
+- [Affiliate links](https://klaska.net/affiliate/): products and services he uses and recommends
