@@ -3,22 +3,24 @@ Hash: SHA512
 
 Contact: mailto:radim@klaska.net
 Contact: mailto:radim.klaska@gmail.com
-Expires: 2100-12-31T11:59:00.000Z
+Expires: 2027-10-30T00:00:00.000Z
 Encryption: https://github.com/radimklaska.gpg
 Preferred-Languages: en, cs
+Canonical: https://klaska.net/.well-known/security.txt
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAEBCgAdFiEEoUCP4d+lcbJRIxIevN4RN2zISbsFAmXV5DgACgkQvN4RN2zI
-Sbsozw/9H7G5xOqsCxqkOeAiHksi369RknI4wKNh8EqyJaPsVXo6gGUEU2j7ogVS
-NHMXVLgwiBzE6VCBtzqlBVQh2lp4okM5t5xwlrIN7Yp8qDAVNPBlmSKA1L8bbZjo
-FIIPA1JMM7T87LevRjEYQhCGy7B6C3ioCuhzuMQeGU1bOGCF9qoREkA9RzZDY1fB
-UZROIPukutY4plurTPPRlQvSAO7cIJROCmpzUB7fsjYCn6TP0gcRjfOB0KiEjcao
-b4J7PNBu7012qkYN32ZCPD4MG9fVOHVm7gmO2nIxRZfg5hQ9wknvVLW78TZOeJNu
-U7/RzqpgyMLwu5PL86APK38HQtlkrdCvz6LxlA80BGz0OkXrHMgrvKJxC44d4LSW
-ni28Y2PfJwSqO2KnM2FgKXeuk64faFEbGqd6k9TiHQA1fST/Pas/upkHDl8CaCIN
-JexXc6mMd/dUDuuTebDHREa98wHFD1oLGYUZlg2qibRbYVHJC2g2tiDerBRY3XWd
-7JcP1RpGuzmmkGx6RJt1upwxvGL7EyP6wJElYAaevkvTCNgAf1GPQg3Z8+zdFser
-QApu9wCHO1f5LyKCdMRv4JfmSjcnLGat5YFSt733jyl7AJJwSMmeSoKRQqjCz7JC
-qveApw0qYmQrGS8fSqEUH32wFG6aGeRcWj/EPVqQ+c7/2bpcJZg=
-=HCVe
+iQJFBAEBCgAvFiEEoUCP4d+lcbJRIxIevN4RN2zISbsFAmrkCoIRHHJhZGltQGts
+YXNrYS5uZXQACgkQvN4RN2zISbtlfQ/+IY0biNUvt6o58ycjOBKyHxtVR+gBqNo9
+vLGnO0BpQW3jVZm7fMRszQ/AE4FZlV6FdxebkYgGDLrZhgwYVKuyL/DwIoqqEdtQ
+Q5WopZ9F6ghYjFFs2nW8n3Zr/jqUJf+GhnSgIrv/0eTZQsk3XP4//Hf+/s03ZkUC
+TNQJeYLaAPaC1uvqTpeTbaMyBcos5X23Ctrl8RQtNp+pX91+9H7ZYxWEncdLI7iZ
+dMJ8fP5TvnnpzABo5evuZHB62GMeOcHztTg9iVtRQKdn2LHmdXUJlVm75cXRGlAP
+nSzuH3r2z3eHTmwZuaDnKQzNLgVigukWrU5+GpT6MRAvR/2yNvtvEusTJuaD3o+Y
+5cR11GG2T/1qABzly5h2h2ymDrE2ttjJ5fwpE+OEkYCalixxXBX4Ch+rOJOojZN0
+UTtXKJy2ZIncojXUBkw2OJDI4wRsnJwj5zlgWPk0mLWrRQW1qn3pQqZYuLh/yLyt
+me0N/iAm+M4Urac0eO/tF4tEHcRUtsstGFLUwOLc0/alZr7KIHGmuSjJyg5misZI
+Fxrod4qyo7VK604fL0rxTbH3VLz/kZl+B4x02pyzer2LNHqsIl/Ue5bcSmufcv3h
+nqf5l5iMSUfRQjpJyFU4DJmwyIa04U2G6I5lR3cAWzkuw0JaTJHO4iSOQ8wL3OFb
+WUaeju9+aBY=
+=3Auc
 -----END PGP SIGNATURE-----

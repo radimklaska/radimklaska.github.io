@@ -3,7 +3,7 @@
 Developer & Site Owner: Radim Klaška
 Contact: radim [at] klaska.net
 Twitter: @radimklaska
-Location: Czech Republic
+Location: Teplice, Czech Republic
 
 /* THANKS */
 
@@ -12,7 +12,7 @@ Template URL: https://github.com/sharu725/online-cv
 
 /* SITE */
 
-Last update: 2025/11/14
+Last update: 2026/10/30
 Standards: HTML5, CSS3, Liquid
 Components: Jekyll, Bootstrap, SCSS
 Software: Jekyll 4.3.4, Ruby 3.3.6
