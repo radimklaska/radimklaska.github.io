@@ -2,7 +2,7 @@
  * Visual regression: PR deploy preview vs production.
  *
  * This runs only when the *toolchain* changes (Gemfile, _config.yml, _includes,
- * _sass, _plugins, ...) and never when page content changes — see
+ * _sass, _plugins, ...) and never when page content changes - see
  * .github/workflows/visual-regression.yml. That constraint is what makes the test
  * meaningful: if the content is identical on both sides, any pixel difference was
  * caused by the dependency or layout change under review, which is exactly what we
@@ -31,8 +31,8 @@ if (!PREVIEW) throw new Error('PREVIEW_URL is not set');
 
 /**
  * Elements that legitimately differ between the two sites and would otherwise
- * dominate the diff. Nothing on this site renders non-deterministically today —
- * the QR codes are generated from static URLs and are byte-identical per build —
+ * dominate the diff. Nothing on this site renders non-deterministically today -
+ * the QR codes are generated from static URLs and are byte-identical per build -
  * so the list is empty. Add a selector here rather than raising MAX_DIFF_RATIO.
  */
 const MASK_SELECTORS = [];
@@ -91,7 +91,7 @@ test.describe('preview matches production', () => {
         .toBeLessThanOrEqual(20);
       expect(
         ratio,
-        `${differing} of ${width * height} pixels differ (${(ratio * 100).toFixed(3)}%) — see the visual-diffs artifact`
+        `${differing} of ${width * height} pixels differ (${(ratio * 100).toFixed(3)}%) - see the visual-diffs artifact`
       ).toBeLessThanOrEqual(MAX_DIFF_RATIO);
     });
   }

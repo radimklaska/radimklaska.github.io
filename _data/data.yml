@@ -142,7 +142,7 @@ support:
         external: false
         description: >
           The best support is paid work. Drupal backend development, security
-          updates and DevOps — see my profile and get in touch.
+          updates and DevOps - see my profile and get in touch.
 
       - title: GitHub Sponsors
         link: https://github.com/sponsors/radimklaska
@@ -159,7 +159,7 @@ affiliate:
     intro: >
       Products and services I use and can recommend. If you sign up or buy
       through one of these links, I may get a small commission or we both
-      receive a bonus — at no extra cost to you.
+      receive a bonus - at no extra cost to you.
     # Item format:
     # - title: Service name
     #   link: https://example.com/referral-code
@@ -168,7 +168,7 @@ affiliate:
       - title: Mana drink
         link: https://refrr.app/6p2N8yuJtl/45592
         description: >
-          Nutritionally complete meal drink — powders and ready-to-drink bottles.
+          Nutritionally complete meal drink - powders and ready-to-drink bottles.
           Join through this link and you get a 100 Kč discount on your order.
 
       - title: Starlink
@@ -186,25 +186,25 @@ affiliate:
       - title: Bybit EU
         link: https://www.bybit.eu/invite?ref=NON0G5V&medium=referral&utm_campaign=evergreen&shareTo=link
         description: >
-          The same exchange on its EU-regulated (MiCA) platform — use this one
+          The same exchange on its EU-regulated (MiCA) platform - use this one
           if you are signing up from the European Union.
 
       - title: Vyfakturuj.cz
         link: https://www.vyfakturuj.cz/?utm=gbwsg601
         description: >
-          Czech online invoicing service — create and send invoices, automate
+          Czech online invoicing service - create and send invoices, automate
           payments, reminders and accounting exports.
 
       - title: SimpleShop
         link: https://www.simpleshop.cz/?utm=gbwsg601
         description: >
           Simple Czech e-shop platform for selling products, services and
-          digital content — from the makers of Vyfakturuj.cz.
+          digital content - from the makers of Vyfakturuj.cz.
 
       - title: AlzaPlus+
         link: https://www.alza.cz/alzaplus-referral?referralCode=deMrro7pguMW
         description: >
-          Membership programme of Alza, the biggest Czech electronics e-shop —
+          Membership programme of Alza, the biggest Czech electronics e-shop -
           free delivery and member-only discounts. Use this link with code
           deMrro7pguMW to get 20% off the annual membership.
 
@@ -213,7 +213,7 @@ affiliate:
         sponsored: false
         description: >
           Great weather visualization and forecasting service with Czech roots.
-          No referral bonus here — I just recommend it.
+          No referral bonus here - I just recommend it.
 
 pay:
     title: Pay
@@ -221,7 +221,7 @@ pay:
       Ways to send me money. If you were expecting a different method,
       just ask.
     note: >
-      Personal payments only — splitting a bill, paying me back, a gift.
+      Personal payments only - splitting a bill, paying me back, a gift.
       For anything business related, please use the payment details on
       the invoice instead.
     # Item format:
@@ -237,7 +237,7 @@ pay:
         description: >
           When PayPal asks what the payment is for, choose “Sending to a
           friend” (friends and family), not “Paying for an item or service”
-          (goods and services) — that one costs me a fee.
+          (goods and services) - that one costs me a fee.
 
 footer: >
   <i class="fas fa-cookie-bite"></i> Cookies! <a href="https://www.youtube.com/watch?v=gYwf_HvnBhA" target="_blank">May contain traces of nuts.</a> | i<sup>2</sup> keeping it real | Design by <a href="http://themes.3rdwavemedia.com" target="_blank" rel="nofollow">Xiaoying Riley</a>

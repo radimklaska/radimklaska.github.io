@@ -1,5 +1,5 @@
 // Visual regression: render every page on the PR's deploy preview and on production,
-// then diff the two. Deliberately no stored baseline images — the comparison is always
+// then diff the two. Deliberately no stored baseline images - the comparison is always
 // against whatever production currently looks like, so there is nothing to keep updated.
 const { defineConfig } = require('@playwright/test');
 
