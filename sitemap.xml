@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Hand-written: /pay/ and /ow-breaker/ are noindex and stay out. -->
+<!-- Hand-written: /pay/ and the /ow-breaker/ and /affiliate/ redirects are noindex and stay out. -->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://klaska.net/</loc>
   </url>
   <url>
-    <loc>https://klaska.net/affiliate/</loc>
+    <loc>https://klaska.net/support/</loc>
   </url>
 </urlset>
