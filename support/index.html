@@ -1,0 +1,82 @@
+---
+layout: default
+title: Support
+---
+
+{% assign support = site.data.data.support %}
+{% if support %}
+<section class="section projects-section">
+
+  <h2 class="section-title">
+    <span class="fa-stack fa-xs">
+      <i class="fas fa-circle fa-stack-2x"></i>
+      <i class="fas fa-hand-holding-heart fa-stack-1x fa-inverse"></i>
+    </span>
+    {{ support.title }}
+  </h2>
+
+  {% if support.intro %}
+  <div class="intro">
+      <p>{{ support.intro }}</p>
+  </div><!--//intro-->
+  {% endif %}
+
+  {% for item in support.links %}
+    <div class="item">
+
+      <span class="project-title">
+        {% if item.external == false %}
+        <a href="{{ item.link }}">{{ item.title }}</a>
+        {% else %}
+        <a href="{{ item.link }}" target="_blank" rel="noopener">{{ item.title }}</a>
+        {% endif %}
+      </span>
+
+      {% if item.description %}
+      - <span class="project-tagline">{{ item.description }}</span>
+      {% endif %}
+
+    </div><!--//item-->
+  {% endfor %}
+
+</section><!--//section-->
+{% endif %}
+
+{% assign affiliate = site.data.data.affiliate %}
+{% if affiliate %}
+<section class="section projects-section">
+
+  <h2 class="section-title">
+    <span class="fa-stack fa-xs">
+      <i class="fas fa-circle fa-stack-2x"></i>
+      <i class="fas fa-tags fa-stack-1x fa-inverse"></i>
+    </span>
+    {{ affiliate.title }}
+  </h2>
+
+  {% if affiliate.intro %}
+  <div class="intro">
+      <p>{{ affiliate.intro }}</p>
+  </div><!--//intro-->
+  {% endif %}
+
+  {% for item in affiliate.links %}
+    <div class="item">
+
+      <span class="project-title">
+        {% if item.link %}
+        <a href="{{ item.link }}" target="_blank" rel="{% if item.sponsored == false %}noopener{% else %}nofollow sponsored noopener{% endif %}">{{ item.title }}</a>
+        {% else %}
+        {{ item.title }}
+        {% endif %}
+      </span>
+
+      {% if item.description %}
+      - <span class="project-tagline">{{ item.description }}</span>
+      {% endif %}
+
+    </div><!--//item-->
+  {% endfor %}
+
+</section><!--//section-->
+{% endif %}

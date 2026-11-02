@@ -127,6 +127,34 @@ skills:
       - name: Sketch & Photoshop
         level: 3%
 
+support:
+    title: Support
+    intro: >
+      Want to support my work? Here are the ways, from the most to the
+      least useful.
+    # Item format:
+    # - title: Name shown on the page
+    #   link: Absolute URL, or a site path such as /
+    #   external: false for links within this site (opens in the same tab)
+    #   description: One or two sentences.
+    links:
+      - title: Hire me
+        link: /
+        external: false
+        description: >
+          The best support is paid work. Drupal backend development, security
+          updates and DevOps — see my profile and get in touch.
+
+      - title: GitHub Sponsors
+        link: https://github.com/sponsors/radimklaska
+        description: >
+          One-off or monthly sponsorship of my open source work through GitHub.
+
+      - title: PayPal.me
+        link: https://www.paypal.me/radimklaska
+        description: >
+          Send any amount directly via PayPal.
+
 affiliate:
     title: Affiliate links
     intro: >

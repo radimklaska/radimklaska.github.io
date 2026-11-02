@@ -36,4 +36,4 @@ Business ID (IČO) 88124444, not a VAT payer. Office: Cowosedlice.cz, Míru 218,
 ## Pages
 
 - [Profile](https://klaska.net/): CV, business details, contact
-- [Affiliate links](https://klaska.net/affiliate/): products and services he uses and recommends
+- [Support](https://klaska.net/support/): ways to support his work (hiring, GitHub Sponsors, PayPal) and affiliate links to products and services he uses and recommends
