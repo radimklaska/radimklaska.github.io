@@ -33,8 +33,30 @@ jobs:
           # grows with the site and returns intermittent 403s.
           # morpht.com and x.com return 403 Forbidden to the runner (bot
           # blocking), so they cannot be verified from CI.
-          args: '--no-progress --root-dir _site/ --exclude linkedin.com --exclude reddit.com --exclude instagram.com --exclude timeanddate.com --exclude alza.cz --exclude slack.com --exclude morpht.com --exclude x.com --exclude /onewheel _site/'
+          # The cvut.cz link is checked in the next step instead: that server
+          # does not send its intermediate certificate, so TLS verification
+          # fails even though the page loads fine in browsers.
+          args: '--no-progress --root-dir _site/ --exclude cvut.cz/en/faculty-of-nuclear-sciences-and-physical-engineering --exclude linkedin.com --exclude reddit.com --exclude instagram.com --exclude timeanddate.com --exclude alza.cz --exclude slack.com --exclude morpht.com --exclude x.com --exclude /onewheel _site/'
           fail: true
+
+      # Links whose server has a broken certificate chain: still verify that
+      # they respond, but without TLS certificate verification (curl -k).
+      # Keep these URLs in sync with the --exclude entries above.
+      - name: Check links with broken TLS chains
+        if: ${{ !cancelled() }}
+        run: |
+          status=0
+          for url in \
+            https://www.cvut.cz/en/faculty-of-nuclear-sciences-and-physical-engineering
+          do
+            if code=$(curl -sSk -L --fail --max-time 30 -o /dev/null -w '%{http_code}' "$url"); then
+              echo "OK   $code $url"
+            else
+              echo "FAIL ${code:-000} $url"
+              status=1
+            fi
+          done
+          exit $status
 
       - name: Notify Discord on failure
         if: failure() && github.event_name == 'schedule'
