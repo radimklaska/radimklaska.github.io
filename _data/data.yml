@@ -130,8 +130,7 @@ skills:
 support:
     title: Support
     intro: >
-      Want to support my work? Here are the ways, from the most to the
-      least useful.
+      Want to support my work? Here are the ways.
     # Item format:
     # - title: Name shown on the page
     #   link: Absolute URL, or a site path such as /
