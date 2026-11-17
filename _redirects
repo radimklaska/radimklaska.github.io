@@ -1,0 +1,29 @@
+# Cloudflare Workers static assets redirects (also understood by Netlify previews).
+# Jekyll copies this file into _site (see `include` in _config.yml); it is not
+# served as a page. Syntax: <from> <to> [status]. :splat keeps the rest of the path.
+# Exact paths first, splat rules last (faster matching).
+
+# Former GitHub Pages project sites, served at klaska.net/<repo>/ until 2026-11,
+# when klaska.net moved from GitHub Pages to Cloudflare. Each now has its own
+# subdomain. Keep these: old links, bookmarks and printed PCBs point here.
+/onewheel                                https://onewheel.klaska.net/ 301
+/owie-flashingtool                       https://owie-flashingtool.klaska.net/ 301
+/airquill                                https://airquill.klaska.net/ 301
+/bobiverse                               https://bobiverse.klaska.net/ 301
+/year_planner                            https://year-planner.klaska.net/ 301
+/random-things-i-explain-often           https://random-things-i-explain-often.klaska.net/ 301
+# Already moved to its own Cloudflare Worker (floaty.klaska.net), a single-page map.
+/floaty_territory_history                https://floaty.klaska.net/ 301
+
+# Short links
+/ow-breaker                              https://owie-flashingtool.klaska.net/ 301
+/ow-breaker/                             https://owie-flashingtool.klaska.net/ 301
+
+# Everything below the former project-site paths, keeping the rest of the path.
+/onewheel/*                              https://onewheel.klaska.net/:splat 301
+/owie-flashingtool/*                     https://owie-flashingtool.klaska.net/:splat 301
+/airquill/*                              https://airquill.klaska.net/:splat 301
+/bobiverse/*                             https://bobiverse.klaska.net/:splat 301
+/year_planner/*                          https://year-planner.klaska.net/:splat 301
+/random-things-i-explain-often/*         https://random-things-i-explain-often.klaska.net/:splat 301
+/floaty_territory_history/*              https://floaty.klaska.net/ 301

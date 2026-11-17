@@ -1,0 +1,119 @@
+name: Deploy to Cloudflare
+
+# Builds the Jekyll site and deploys _site/ to Cloudflare (assets-only Worker,
+# see wrangler.jsonc).
+#   push to main -> production (klaska.net)
+#   pull request -> a preview version on workers.dev (noindex), linked in one PR comment
+#
+# Secrets: CLOUDFLARE_API_TOKEN (deploy token: Workers Scripts Edit + Account
+# Settings Read on the account, Workers Routes Edit + Zone Read on klaska.net),
+# CLOUDFLARE_ACCOUNT_ID. Same setup as floaty_territory_history.
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+concurrency:
+  # One production deploy at a time; previews per PR.
+  group: deploy-${{ github.event_name == 'pull_request' && github.ref || 'production' }}
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      pull-requests: write # the preview-links comment
+    env:
+      IS_PR: ${{ github.event_name == 'pull_request' }}
+      # Fork and Dependabot PRs get no Actions secrets: they still build (the build
+      # is the check), but skip the preview upload instead of failing on it.
+      HAS_CF_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN != '' }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version-file: '.ruby-version'
+          bundler-cache: true
+
+      - name: Build with Jekyll
+        run: bundle exec jekyll build
+        env:
+          JEKYLL_ENV: production
+
+      - name: Check the build contains the redirects and dot-directories
+        run: |
+          test -f _site/_redirects
+          test -f _site/.well-known/security.txt
+          test -f _site/404.html
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      # package-lock.json is gitignored here; wrangler is pinned exactly in package.json.
+      - name: Install wrangler
+        if: env.IS_PR != 'true' || env.HAS_CF_TOKEN == 'true'
+        run: npm install --no-audit --no-fund
+
+      - name: Deploy to production
+        if: env.IS_PR != 'true'
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: npx wrangler deploy
+
+      - name: Upload a preview version
+        id: upload
+        if: env.IS_PR == 'true' && env.HAS_CF_TOKEN == 'true'
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          PR: ${{ github.event.number }}
+        run: |
+          if ! npx wrangler versions upload --preview-alias "pr-$PR" > upload.log 2>&1; then
+            cat upload.log
+            # Versions can only be uploaded to an existing Worker; the first push to
+            # main creates it. Until then there is nothing to preview against.
+            if grep -q 'does not yet exist' upload.log; then
+              echo "::notice::No preview: the Worker is created by the first deploy from main."
+              exit 0
+            fi
+            exit 1
+          fi
+          cat upload.log
+          grep -E 'Preview (Alias )?URL' upload.log >> "$GITHUB_STEP_SUMMARY" || true
+          echo "ok=true" >> "$GITHUB_OUTPUT"
+
+      - name: Post the preview links on the PR
+        if: steps.upload.outputs.ok == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          PR: ${{ github.event.number }}
+          SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          alias_url=$(grep -E '^Version Preview Alias URL: ' upload.log | awk '{print $NF}')
+          version_url=$(grep -E '^Version Preview URL: ' upload.log | awk '{print $NF}')
+          marker='<!-- preview-links -->'
+          # shellcheck disable=SC2016 # literal backticks are Markdown
+          body=$(printf '%s\n**Preview of this PR:** %s\nThis commit (`%s`): %s\nProduction is unchanged until the PR is merged. Previews are noindex.' \
+            "$marker" "$alias_url" "${SHA:0:7}" "$version_url")
+          id=$(gh api "repos/$REPO/issues/$PR/comments" --paginate \
+            --jq ".[] | select(.user.login == \"github-actions[bot]\" and (.body | startswith(\"$marker\"))) | .id" | head -1)
+          if [ -n "$id" ]; then
+            gh api -X PATCH "repos/$REPO/issues/comments/$id" -f body="$body" > /dev/null
+          else
+            gh pr comment "$PR" --repo "$REPO" --body "$body"
+          fi
