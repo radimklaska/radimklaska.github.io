@@ -35,7 +35,7 @@ permissions:
 
 jobs:
   compare:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04 # ruby/setup-ruby has no Ruby 3.3.6 build for ubuntu-26.04 (ubuntu-latest)
     env:
       PROD_URL: https://klaska.net
     steps:
