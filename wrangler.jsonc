@@ -13,8 +13,9 @@
   "workers_dev": false,
   "preview_urls": true,
 
-  // No routes yet: the first deploy only creates the Worker (previews need it to
-  // exist). The cutover PR adds the klaska.net custom domain.
+  // Cloudflare owns this hostname's DNS record and certificate. A CI deploy
+  // replaces any existing DNS records for it (the old GitHub Pages A records).
+  "routes": [{ "pattern": "klaska.net", "custom_domain": true }],
 
   "assets": {
     // Build first: bundle exec jekyll build
