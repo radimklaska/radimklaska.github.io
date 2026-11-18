@@ -124,13 +124,19 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           PR: ${{ github.event.number }}
         run: |
-          npx wrangler preview --name "pr-$PR" --message "PR #$PR" --json > preview.out
+          rc=0
+          npx wrangler preview --name "pr-$PR" --message "PR #$PR" --json > preview.out 2> preview.err || rc=$?
+          if [ "$rc" -ne 0 ]; then
+            cat preview.out preview.err
+            echo "::error::wrangler preview failed (exit $rc)"
+            exit "$rc"
+          fi
           # Keep only the JSON document, in case anything else reached stdout.
           sed -n '/^{/,$p' preview.out > preview.json
           url=$(jq -r '.preview.urls[0] // empty' preview.json)
           commit_url=$(jq -r '.deployment.urls[0] // empty' preview.json)
           if [ -z "$url" ]; then
-            cat preview.out
+            cat preview.out preview.err
             echo "::error::wrangler preview returned no URL"
             exit 1
           fi
