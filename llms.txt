@@ -4,8 +4,10 @@
 
 ## Profile
 
-- Work: Drupal backend developer & DevOps at [Morpht](https://www.morpht.com) (2014 to present). Coordinates security updates across all Morpht projects, keeps builds and tests running, and sets developers up with local environments (Lando). Before that: Drupal developer at PLAYzone (2011-2014), freelance Drupal site builder (2006-2011).
-- Community: founding member and chairman of the [Czech Drupal Association](https://www.drupal.cz/assoc); organiser of Drupal Iron Camp and Drupal CS camp, volunteer at DrupalCons.
+- Work: Drupal developer, technical lead and Updates Manager at [Morpht](https://www.morpht.com) (2014 to present), 150+ projects, mostly for Australian government clients. Manages security and maintenance updates across all Morpht projects, handles incident response, Drupal upgrades and migrations, CI/CD and local environments (Lando, DDEV), and coordinates and mentors the Czech team. Before that: Drupal developer at PLAYzone (2011-2014), freelance Drupal site builder (2006-2011).
+- Selected Morpht projects he worked on (with his part and screenshots on the profile page): ACECQA, NSW Trustee and Guardian, Attorney-General's Department, MDSAP, Redfern Legal Centre, GovFlix, NSW Food Authority, AER, IPEA, TGA, Australian Air Force Cadets, Reef Guardian Schools, GreenPower.
+- Open source: on drupal.org since 2008; maintains or co-maintains Sentry, Disclaimer, Let's Encrypt Challenge, Look, Modifiers, Recombee and jQuery Migrate 3.x.
+- Community: founding member and chairman of the [Czech Drupal Association](https://www.drupal.cz/assoc); organiser of Drupal meetups in Prague, DrupalCamp CS and Drupal Iron Camp, speaker at Drupal meetups, DrupalCamps and WordCamp Prague 2020, volunteer at DrupalCon Prague 2022.
 - Side quests: reverse engineering Onewheel boards (BMS firmware decompiled and documented), one of the few people repairing Onewheels in Europe.
 - Education: Bachelor's degree in Computer Science, Czech Technical University in Prague (2012).
 - Languages: Czech (native), English (working professional).

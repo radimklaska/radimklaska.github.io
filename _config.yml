@@ -15,9 +15,6 @@ description: Drupal geek since 5.4 (It was 2007, right?)
 theme_skin: blue # blue turquoise green berry orange ceramic
 chrome_mobile_color: #use hex colors (ex:#1976d2) or leave empty if you don't want a color for chrome mobile searchbar
 
-# Tracker
-analytics: UA-2291055-1
-
 # Sass/SCSS
 sass:
   sass_dir: _sass

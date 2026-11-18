@@ -233,6 +233,95 @@ p {
         }
     }
 
+    .references-section {
+        .intro {
+            margin-bottom: 30px;
+        }
+        .item {
+            display: flex;
+            align-items: flex-start;
+            gap: 20px;
+            margin-bottom: 30px;
+            @media (max-width: 767px) {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+        .reference-image {
+            flex: 0 0 240px;
+            max-width: 240px;
+            @media (max-width: 767px) {
+                flex-basis: auto;
+                max-width: 100%;
+            }
+            img {
+                display: block;
+                width: 100%;
+                height: auto;
+                border: 1px solid #e8e8e8;
+                border-radius: 4px;
+            }
+        }
+        .reference-body {
+            flex: 1 1 auto;
+            min-width: 0;
+            p {
+                margin-bottom: 5px;
+            }
+        }
+        .reference-title {
+            margin-bottom: 8px;
+        }
+        .reference-client {
+            color: $text-grey;
+            margin-top: -8px;
+            margin-bottom: 8px;
+        }
+        .reference-award {
+            color: darken($theme-color, 15%);
+        }
+        .reference-links {
+            margin: 5px 0 0;
+        }
+        .reference-others ul {
+            padding-left: 20px;
+        }
+    }
+
+    .talks-section {
+        .intro {
+            margin-bottom: 20px;
+        }
+        .talks-list, .talks-organised {
+            padding-left: 20px;
+            margin-bottom: 20px;
+            li {
+                margin-bottom: 6px;
+            }
+        }
+        .talk-date, .talk-event {
+            color: $text-grey;
+        }
+        .talk-date {
+            margin-right: 6px;
+        }
+        .talks-subtitle {
+            margin-bottom: 10px;
+        }
+    }
+
+    .contributions-section {
+        .intro {
+            margin-bottom: 20px;
+        }
+        .item {
+            margin-bottom: 15px;
+        }
+        .contribution-title {
+            margin-bottom: 5px;
+        }
+    }
+
     .pay-section {
         .intro {
             margin-bottom: 20px;

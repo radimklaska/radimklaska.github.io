@@ -50,8 +50,7 @@ radimklaska.github.io/
 │   ├── onewheel.html      # OneWheel reverse engineering section (CUSTOM)
 │   ├── head.html          # HTML head section
 │   ├── footer.html        # Site footer
-│   ├── scripts.html       # JavaScript includes
-│   └── analytics.html     # Google Analytics tracking
+│   └── scripts.html       # JavaScript includes
 ├── _layouts/
 │   ├── default.html       # Main page template
 │   └── compress.html      # HTML compression wrapper
@@ -348,13 +347,6 @@ education:
     time: [Year or Period]
     details: |
       [Description]
-```
-
-### 6. Modifying Analytics
-
-```yaml
-# In _config.yml
-analytics: UA-XXXXXXX-X  # Google Analytics tracking ID
 ```
 
 ## Important Files Reference
