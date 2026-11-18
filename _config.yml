@@ -40,14 +40,12 @@ safe: false
 exclude:
   - CLAUDE.md
   - README.md
-  - NETLIFY_SETUP.md
   - Gemfile
   - Gemfile.lock
   - bin/
   - vendor/
   - .gitignore
   - .ruby-version
-  - netlify.toml
   - wrangler.jsonc
   # Visual regression tooling
   - package.json

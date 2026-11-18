@@ -1,4 +1,4 @@
-# Cloudflare Workers static assets redirects (also understood by Netlify previews).
+# Cloudflare Workers static assets redirects.
 # Jekyll copies this file into _site (see `include` in _config.yml); it is not
 # served as a page. Syntax: <from> <to> [status]. :splat keeps the rest of the path.
 # Exact paths first, splat rules last (faster matching).
