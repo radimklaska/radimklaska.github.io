@@ -1,0 +1,303 @@
+name: Deploy to Cloudflare
+
+# Builds the Jekyll site and deploys _site/ to Cloudflare (assets-only Worker,
+# see wrangler.jsonc). No Netlify: previews are Cloudflare Workers Previews.
+#   push to main      -> production (klaska.net)
+#   PR opened/pushed  -> a Preview named pr-<N> on workers.dev, linked in one PR
+#                        comment; plus visual regression against production when
+#                        the toolchain changed (job `visual`)
+#   PR closed/merged  -> the Preview is deleted and the comment says so
+#
+# Secrets: CLOUDFLARE_API_TOKEN (deploy token: Workers Scripts Edit + Account
+# Settings Read on the account, Workers Routes Edit + Zone Read on klaska.net),
+# CLOUDFLARE_ACCOUNT_ID. Fork and Dependabot PRs get no secrets: they still build
+# (the build is the check) but get no preview and no visual regression.
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+    types: [opened, synchronize, reopened, closed]
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+concurrency:
+  # One production deploy at a time; one run per PR (a close waits for a running deploy).
+  group: deploy-${{ github.event_name == 'pull_request' && github.event.number || 'production' }}
+  cancel-in-progress: false
+
+env:
+  PREVIEW_MARKER: '<!-- preview-links -->'
+
+jobs:
+  deploy:
+    if: github.event.action != 'closed'
+    runs-on: ubuntu-24.04 # ruby/setup-ruby has no Ruby 3.3.6 build for ubuntu-26.04 (ubuntu-latest)
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      pull-requests: write # the preview-links comment
+    env:
+      IS_PR: ${{ github.event_name == 'pull_request' }}
+      HAS_CF_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN != '' }}
+    outputs:
+      preview_url: ${{ steps.preview.outputs.url }}
+      toolchain_changed: ${{ steps.changes.outputs.toolchain }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          # On a PR this is the merge commit; its first parent is the base branch,
+          # so HEAD^1..HEAD is exactly what the PR changes.
+          fetch-depth: 2
+
+      # Visual regression runs ONLY when the toolchain changes - dependencies, site
+      # config, templates, styles, plugins, or the workflows themselves. Deliberately
+      # not on content changes: editing a page is *supposed* to change how it looks,
+      # so a diff against production would be noise. When only the toolchain moves,
+      # the rendered pages should be pixel-identical, and anything that is not is
+      # worth a human looking at. _data/** is absent on purpose: _data/data.yml is
+      # the site's entire content store, so a change to it is a content change.
+      - name: Did the toolchain change?
+        id: changes
+        if: env.IS_PR == 'true'
+        run: |
+          changed=$(git diff --name-only HEAD^1 HEAD)
+          echo "$changed"
+          if echo "$changed" | grep -qE '^(Gemfile|Gemfile\.lock|\.ruby-version|_config\.yml|_includes/|_layouts/|_plugins/|_sass/|assets/css/|package\.json|playwright\.config\.js|tests/|wrangler\.jsonc|_redirects|\.github/workflows/)'; then
+            echo "toolchain=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version-file: '.ruby-version'
+          bundler-cache: true
+
+      - name: Build with Jekyll
+        run: bundle exec jekyll build
+        env:
+          JEKYLL_ENV: production
+
+      - name: Check the build contains the redirects and dot-directories
+        run: |
+          test -f _site/_redirects
+          test -f _site/.well-known/security.txt
+          test -f _site/404.html
+
+      - name: Keep the build for visual regression
+        if: steps.changes.outputs.toolchain == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: site
+          path: _site/
+          include-hidden-files: true
+          retention-days: 1
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      # package-lock.json is gitignored here; wrangler is pinned exactly in package.json.
+      - name: Install wrangler
+        if: env.IS_PR != 'true' || env.HAS_CF_TOKEN == 'true'
+        run: npm install --no-audit --no-fund
+
+      - name: Deploy to production
+        if: env.IS_PR != 'true'
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: npx wrangler deploy
+
+      # Workers Previews (open beta): one Preview per PR, updated on every push. It
+      # creates the Worker if it does not exist yet, without deploying any route.
+      - name: Upload the PR preview
+        id: preview
+        if: env.IS_PR == 'true' && env.HAS_CF_TOKEN == 'true'
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          PR: ${{ github.event.number }}
+        run: |
+          rc=0
+          npx wrangler preview --name "pr-$PR" --message "PR #$PR" --json > preview.out 2> preview.err || rc=$?
+          if [ "$rc" -ne 0 ]; then
+            cat preview.out preview.err
+            echo "::error::wrangler preview failed (exit $rc)"
+            exit "$rc"
+          fi
+          # Keep only the JSON document, in case anything else reached stdout.
+          sed -n '/^{/,$p' preview.out > preview.json
+          url=$(jq -r '.preview.urls[0] // empty' preview.json)
+          commit_url=$(jq -r '.deployment.urls[0] // empty' preview.json)
+          if [ -z "$url" ]; then
+            cat preview.out preview.err
+            echo "::error::wrangler preview returned no URL"
+            exit 1
+          fi
+          echo "url=$url" >> "$GITHUB_OUTPUT"
+          echo "commit_url=$commit_url" >> "$GITHUB_OUTPUT"
+          printf 'Preview: %s\nThis commit: %s\n' "$url" "$commit_url" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Post the preview links on the PR
+        if: steps.preview.outputs.url != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          PR: ${{ github.event.number }}
+          SHA: ${{ github.event.pull_request.head.sha }}
+          URL: ${{ steps.preview.outputs.url }}
+          COMMIT_URL: ${{ steps.preview.outputs.commit_url }}
+        run: |
+          # shellcheck disable=SC2016 # literal backticks are Markdown
+          body=$(printf '%s\n**Preview of this PR:** %s\nThis commit (`%s`): %s\nProduction is unchanged until the PR is merged. The preview is deleted when the PR is closed.' \
+            "$PREVIEW_MARKER" "$URL" "${SHA:0:7}" "${COMMIT_URL:-n/a}")
+          id=$(gh api "repos/$REPO/issues/$PR/comments" --paginate \
+            --jq ".[] | select(.user.login == \"github-actions[bot]\" and (.body | startswith(\"$PREVIEW_MARKER\"))) | .id" | head -1)
+          if [ -n "$id" ]; then
+            gh api -X PATCH "repos/$REPO/issues/comments/$id" -f body="$body" > /dev/null
+          else
+            gh pr comment "$PR" --repo "$REPO" --body "$body"
+          fi
+
+  visual:
+    needs: deploy
+    if: needs.deploy.outputs.preview_url != '' && needs.deploy.outputs.toolchain_changed == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      PROD_URL: https://klaska.net
+      PREVIEW_URL: ${{ needs.deploy.outputs.preview_url }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Get the build
+        uses: actions/download-artifact@v4
+        with:
+          name: site
+          path: _site
+
+      # This site has no sitemap.xml worth trusting for this, so the page list comes
+      # from the build. Crawling the preview would be the other option, but /pay/ is
+      # deliberately unlinked and a crawler would never reach it.
+      - name: Build the page list
+        run: |
+          python3 - <<'PY'
+          import json, os, re, sys
+          paths = []
+          skipped = []
+          for root, _, files in os.walk('_site'):
+              for f in files:
+                  if not f.endswith('.html'):
+                      continue
+                  full = os.path.join(root, f)
+                  # A meta-refresh page jumps to an absolute production URL, so both
+                  # sides would screenshot the same page. Nothing to compare.
+                  head = open(full, encoding='utf-8', errors='replace').read(4096)
+                  rel = '/' + os.path.relpath(full, '_site').replace(os.sep, '/')
+                  if re.search(r'http-equiv=["\']?refresh', head, re.I):
+                      skipped.append(rel)
+                      continue
+                  paths.append(re.sub(r'/index\.html$', '/', rel))
+          paths = sorted(set(paths))
+          if not paths:
+              print('::error::No pages found in _site', file=sys.stderr)
+              sys.exit(1)
+          os.makedirs('tests', exist_ok=True)
+          json.dump(paths, open('tests/pages.json', 'w'), indent=1)
+          print(f'{len(paths)} page(s): ' + ', '.join(paths))
+          if skipped:
+              print('skipped (redirects): ' + ', '.join(skipped))
+          PY
+
+      - name: Wait for the preview
+        run: |
+          for i in $(seq 1 30); do
+            code=$(curl -s -o /dev/null -w '%{http_code}' -m 20 "$PREVIEW_URL/" || true)
+            if [ "$code" = "200" ]; then echo "Preview ready after ${i} attempt(s)."; exit 0; fi
+            echo "attempt $i: HTTP $code, waiting..."
+            sleep 10
+          done
+          echo "::error::Preview $PREVIEW_URL did not answer 200 within ~5 minutes."
+          exit 1
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        run: |
+          npm install --no-audit --no-fund
+          npx playwright install --with-deps chromium
+
+      - name: Compare preview against production
+        run: npx playwright test
+
+      - name: Upload diffs
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: visual-diffs
+          path: |
+            visual-diffs/
+            playwright-report/
+          retention-days: 14
+          if-no-files-found: ignore
+
+  cleanup:
+    if: github.event_name == 'pull_request' && github.event.action == 'closed'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      pull-requests: write # update the preview-links comment
+    env:
+      HAS_CF_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN != '' }}
+    steps:
+      - name: Checkout
+        if: env.HAS_CF_TOKEN == 'true'
+        uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        if: env.HAS_CF_TOKEN == 'true'
+        with:
+          node-version: 22
+
+      - name: Install wrangler
+        if: env.HAS_CF_TOKEN == 'true'
+        run: npm install --no-audit --no-fund
+
+      - name: Delete the PR preview
+        if: env.HAS_CF_TOKEN == 'true'
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          PR: ${{ github.event.number }}
+        run: |
+          if ! npx wrangler preview delete --name "pr-$PR" --skip-confirmation > delete.log 2>&1; then
+            cat delete.log
+            # Nothing to delete (e.g. the PR never got a preview) is fine.
+            if grep -qiE 'not found|does not exist' delete.log; then exit 0; fi
+            exit 1
+          fi
+          cat delete.log
+
+      - name: Say so in the preview-links comment
+        if: env.HAS_CF_TOKEN == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          PR: ${{ github.event.number }}
+        run: |
+          id=$(gh api "repos/$REPO/issues/$PR/comments" --paginate \
+            --jq ".[] | select(.user.login == \"github-actions[bot]\" and (.body | startswith(\"$PREVIEW_MARKER\"))) | .id" | head -1)
+          if [ -n "$id" ]; then
+            body=$(printf '%s\n~~Preview of this PR~~: deleted when the PR was closed.' "$PREVIEW_MARKER")
+            gh api -X PATCH "repos/$REPO/issues/comments/$id" -f body="$body" > /dev/null
+          fi

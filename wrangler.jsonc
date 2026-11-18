@@ -1,0 +1,32 @@
+// klaska.net: an assets-only Worker serving the Jekyll build (_site/). No Worker
+// script, so every request is a free static-asset request; _redirects (from the
+// repo root, copied into _site by Jekyll) holds the redirects, including the
+// former GitHub Pages project sites that used to live at klaska.net/<repo>/.
+// The zone injects the Cloudflare Web Analytics beacon automatically.
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "klaska-net",
+  "compatibility_date": "2026-11-15",
+
+  // Production is the custom domain only. Per-PR previews stay on workers.dev,
+  // where Cloudflare adds X-Robots-Tag: noindex automatically.
+  "workers_dev": false,
+  "preview_urls": true,
+
+  // Cloudflare owns this hostname's DNS record and certificate. Existing DNS
+  // records for it must be deleted first: the deploy does not replace them
+  // (error 100117 "already has externally managed DNS records").
+  "routes": [{ "pattern": "klaska.net", "custom_domain": true }],
+
+  // Workers Previews (`wrangler preview`, one per PR, see deploy.yml). Nothing to
+  // configure for an assets-only Worker, but the block has to exist.
+  "previews": {},
+
+  "assets": {
+    // Build first: bundle exec jekyll build
+    "directory": "./_site",
+    "html_handling": "auto-trailing-slash",
+    // Serves the nearest 404.html with a 404 status, like GitHub Pages did.
+    "not_found_handling": "404-page"
+  }
+}

@@ -11,3 +11,6 @@ test-results/
 playwright-report/
 visual-diffs/
 tests/pages.json
+
+# Cloudflare wrangler local state
+.wrangler/

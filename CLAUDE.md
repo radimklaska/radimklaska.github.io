@@ -2,11 +2,11 @@
 
 ## Repository Overview
 
-This is a personal portfolio/CV website built with Jekyll and deployed to GitHub Pages. The site showcases professional experience, skills, and community involvement for Radim Klaška, a Drupal backend developer and DevOps specialist.
+This is a personal portfolio/CV website built with Jekyll and deployed to Cloudflare (an assets-only Worker). The site showcases professional experience, skills, and community involvement for Radim Klaška, a Drupal backend developer and DevOps specialist.
 
 **Live Sites:**
 - Production: https://klaska.net
-- GitHub Pages: https://radimklaska.github.io
+- Hosting: Cloudflare Worker `klaska-net` (custom domain klaska.net). radimklaska.github.io is no longer served from this repo.
 
 **Base Template:** Modified version of [online-cv](https://github.com/sharu725/online-cv) by Xiaoying Riley
 
@@ -20,9 +20,9 @@ This is a personal portfolio/CV website built with Jekyll and deployed to GitHub
 - **Liquid** - Templating language
 
 ### Build & Deployment
-- **GitHub Actions** - CI/CD pipeline (`.github/workflows/jekyll-deploy.yml`)
-- **GitHub Pages** - Primary hosting platform
-- **Netlify** - Alternative deployment with PR preview capabilities (configured but optional)
+- **GitHub Actions** - CI/CD pipeline (`.github/workflows/deploy.yml`): Jekyll build + `wrangler deploy`
+- **Cloudflare Workers static assets** - Hosting (`wrangler.jsonc`), redirects in `_redirects`
+- **Cloudflare Workers Previews** - one preview per PR (no Netlify)
 
 ### Dependencies
 Key gems managed via `Gemfile`:
@@ -39,9 +39,14 @@ radimklaska.github.io/
 │   └── data.yml            # ALL content data (profile, experience, skills, etc.)
 ├── _includes/              # Reusable HTML components
 │   ├── sidebar.html        # Left sidebar with profile info
+│   ├── tldr.html           # TL;DR summary above the profile
 │   ├── career-profile.html # Career summary section
 │   ├── experiences.html    # Work experience timeline
+│   ├── references.html     # Selected projects at Morpht (screenshots in assets/images/references/)
 │   ├── skills.html         # Skills & proficiency bars
+│   ├── talks.html          # Talks, workshops & events
+│   ├── contributions.html  # Open source contributions
+│   ├── projects.html       # Side projects
 │   ├── education.html      # Education history
 │   ├── contact.html        # Contact information
 │   ├── language.html       # Language proficiencies
@@ -77,17 +82,16 @@ radimklaska.github.io/
 │   └── jekyll             # Bundler binstub for Jekyll
 ├── .github/
 │   └── workflows/
-│       └── jekyll-deploy.yml  # GitHub Actions deployment
+│       └── deploy.yml     # Build + deploy to Cloudflare
 ├── .well-known/           # Domain verification files
 ├── index.html             # Homepage (includes sections from _includes/)
 ├── 404.html              # Custom 404 error page
 ├── Gemfile               # Ruby dependencies
 ├── Gemfile.lock          # Locked dependency versions
-├── netlify.toml          # Netlify configuration (optional)
-├── NETLIFY_SETUP.md      # Netlify setup instructions
 ├── .ruby-version         # Ruby version specification
 ├── .gitignore            # Git ignore rules
-├── CNAME                 # Custom domain configuration
+├── wrangler.jsonc        # Cloudflare Worker config (custom domain klaska.net)
+├── _redirects            # 301s, incl. former klaska.net/<repo>/ project sites
 └── site.webmanifest      # PWA manifest
 ```
 
@@ -131,13 +135,18 @@ Sections are componentized in `_includes/` and assembled in `index.html`:
 
 **Pattern in `index.html`:**
 ```liquid
+{% include tldr.html %}
 {% include career-profile.html %}
 {% unless site.data.data.sidebar.education %}
   {% include education.html %}
 {% endunless %}
 {% include experiences.html %}
+{% include references.html %}
 {% include skills.html %}
 {% include czda.html %}      # Custom section
+{% include talks.html %}
+{% include contributions.html %}
+{% include projects.html %}
 {% include onewheel.html %}  # Custom section
 ```
 
@@ -208,34 +217,28 @@ The site has two custom sections as examples:
 
 ## Deployment Process
 
-### GitHub Pages Deployment
+### Cloudflare Deployment
 
-**Trigger:** Push to `main` branch
+**Trigger:** Push to `main` (production) or a PR targeting `main` (preview)
 
-**Workflow:** `.github/workflows/jekyll-deploy.yml`
-1. **Build Job:**
-   - Checkout code
-   - Setup Ruby (version from `.ruby-version`)
-   - Install dependencies via Bundler (cached)
-   - Build site with `bundle exec jekyll build`
-   - Upload artifact
+**Workflow:** `.github/workflows/deploy.yml`
+- Build the site with `bundle exec jekyll build` (Ruby from `.ruby-version`)
+- `npm install` (wrangler is pinned in `package.json`; `package-lock.json` is gitignored)
+- Push to `main`: `npx wrangler deploy` -> https://klaska.net
+- PR opened/pushed: `npx wrangler preview --name pr-<N>` (Workers Previews, open beta) -> a workers.dev preview, linked in one PR comment
+- PR touching the toolchain (templates, styles, config, deps, workflows): job `visual` screenshots every page on the preview and on production and fails on pixel differences (Playwright, `tests/visual.spec.js`)
+- PR closed or merged: `npx wrangler preview delete --name pr-<N>` and the comment says so
+- Secrets: `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID` (same setup as floaty_territory_history)
 
-2. **Deploy Job:**
-   - Deploy to GitHub Pages
-   - Available at https://radimklaska.github.io
-   - Custom domain: https://klaska.net (via `CNAME`)
+**Config:** `wrangler.jsonc` (assets-only Worker serving `_site/`, `404.html` for misses, custom domain klaska.net).
+Analytics: Cloudflare Web Analytics, injected by the klaska.net zone (no tag in the templates).
 
-**Note:** The workflow also runs on PRs targeting `main` but only builds (doesn't deploy).
+**Redirects:** `_redirects` (listed in `include` in `_config.yml`, because Jekyll skips `_` files). The former
+GitHub Pages project sites that lived at `klaska.net/<repo>/` now have their own subdomains (onewheel,
+owie-flashingtool, airquill, bobiverse, year-planner, floaty) and are 301-redirected
+from the old paths. Keep those rules: printed PCBs and old links point there.
 
-### Netlify Deployment (Optional)
-
-Configured via `netlify.toml`:
-- Build command: `bundle exec jekyll build`
-- Publish directory: `_site`
-- Ruby version: 2.3.3 (note: different from local `.ruby-version`)
-- Provides PR preview deployments
-
-See `NETLIFY_SETUP.md` for detailed setup instructions.
+**Local check:** `bundle exec jekyll build && npx wrangler dev` serves `_site/` with the redirects and 404 handling.
 
 ## Key Conventions
 
@@ -361,8 +364,8 @@ education:
 | `_sass/*.scss` | Stylesheets | ✅ YES - For styling changes |
 | `index.html` | Homepage structure | ⚠️ CAREFUL - Section order only |
 | `.github/workflows/` | CI/CD config | ⚠️ CAREFUL - Advanced only |
-| `netlify.toml` | Netlify config | ⚠️ CAREFUL - If using Netlify |
-| `CNAME` | Custom domain | ⚠️ CAREFUL - Domain config only |
+| `wrangler.jsonc` | Cloudflare Worker + custom domain | ⚠️ CAREFUL - Hosting config |
+| `_redirects` | Redirects (Cloudflare Workers static assets syntax) | ✅ YES - Keep the old project-site paths |
 
 ## Troubleshooting Guide
 
@@ -491,7 +494,7 @@ Jekyll Build
     ↓
 Static Site (_site/)
     ↓
-Deployment (GitHub Pages / Netlify)
+Deployment (Cloudflare Worker; PR previews are Workers Previews)
 ```
 
 ## Custom Sections Pattern
