@@ -71,7 +71,7 @@ experiences:
 
         - **Updates Manager** - I manage and coordinate security and maintenance updates across all Morpht projects: about 1,500
           update tickets on more than 80 projects since 2015, from Drupal core security releases to PHP, Node.js and Composer upgrades.
-          I'm the main contributor to the internal tooling that keeps this repeatable.
+          I wrote nearly all of the internal update tooling that keeps this repeatable.
         - **Incident response** - when a site goes down or a highly critical security release lands, I triage, fix or hotfix and
           coordinate the release across the affected sites.
         - **Upgrades and migrations** - Drupal 7 to 8/9/10/11 upgrades, multi-site upgrade programmes, moving sites between
@@ -123,10 +123,6 @@ projects:
       - title: Drupal.cz
         link: https://www.drupal.cz
         tagline: "The Czech Drupal community site - migrated from Drupal 6 and kept up to date ever since."
-
-      - title: Let's Encrypt for Drupal
-        link: https://www.morpht.com/blog/announcing-lets-encrypt-drupal
-        tagline: "Open source tooling to run Let's Encrypt certificates on Drupal hosting."
 
 talks:
     title: Talks, workshops & events
@@ -296,7 +292,7 @@ references:
       - title: NSW Trustee and Guardian
         client: NSW Trustee and Guardian (NSW Government)
         image: nswtg.jpg
-        my_role: Development and long-term support, 2020 - 2026.
+        my_role: Long-term support and updates, 2020 - 2026, including build and theming work in 2024.
         summary: >
           Integration of Microsoft Dynamics CRM, the booking portal, Google Maps and Drupal. Pop-up service locations
           are entered once in the CRM, appear on the site automatically and residents can find the nearest one and book.
@@ -335,23 +331,10 @@ references:
           - title: Drupal.org case study
             link: https://new.drupal.org/case-study/medical-device-single-audit-program-new-drupal-cms-site
 
-      - title: Respect@Work
-        client: Australian Human Rights Commission
-        image: respectatwork.jpg
-        my_role: Development and support, 2023 - 2024.
-        summary: >
-          Website for the national workplace sexual harassment initiative with privacy-preserving personalisation:
-          content adapts to employers or employees using only behaviour stored in the browser, no personal data.
-        sources:
-          - title: Morpht case study
-            link: https://www.morpht.com/work/respect-at-work
-          - title: Drupal.org case study
-            link: https://new.drupal.org/case-study/respectwork-personalisation-and-ux
-
       - title: Redfern Legal Centre
         client: Redfern Legal Centre
         image: rlc.jpg
-        my_role: Development and support, 2021 - 2026.
+        my_role: Platform setup, Drupal 10 upgrade and long-term support, 2021 - 2026.
         summary: >
           Pro bono rebuild of the community legal centre's site from Drupal 7 to Drupal 9, with 1,700 migrated articles
           and resources, online client intake forms and an accessible design the staff can run in-house.
@@ -379,7 +362,7 @@ references:
       - title: NSW Food Authority
         client: NSW Food Authority
         image: foodauthority.jpg
-        my_role: Support, updates and the Drupal 10 upgrade, 2019 - 2026.
+        my_role: Theme setup during the build (2019), Drupal 10 and 11 upgrades and support, 2019 - 2026.
         summary: >
           Migration from a legacy CMS to GovCMS SaaS with the NSW Design System. External data feeds power public
           registers and live shellfish harvest-area alerts.
@@ -404,7 +387,7 @@ references:
       - title: Australian Energy Regulator
         client: Australian Energy Regulator
         image: aer.jpg
-        my_role: Development during the rebuild, 2022 - 2023, and support.
+        my_role: Environments and CI deployment during the move to GovCMS PaaS, 2022 - 2023, and later updates.
         summary: >
           Rebuild of a 10-year-old Drupal 7 site on GovCMS: about 27,000 pages and 42,000 documents migrated without
           data loss, 32 legacy content types consolidated, externally audited for WCAG 2.1 AA.
@@ -418,7 +401,7 @@ references:
       - title: IPEA
         client: Independent Parliamentary Expenses Authority
         image: ipea.jpg
-        my_role: Development and support, 2021 - 2026.
+        my_role: Development environments, data import fixes and support, 2021 - 2026.
         summary: >
           New site where quarterly datasets of 30,000+ expense records are imported in one step and generate
           parliamentarian pages and reports, replacing hundreds of hand-uploaded PDFs.
@@ -446,7 +429,7 @@ references:
       - title: Australian Air Force Cadets
         client: Australian Air Force Cadets
         image: aafc.jpg
-        my_role: Development and support, 2021 - 2025.
+        my_role: Site preparation, Drupal 10 upgrade and support, 2021 - 2026.
         summary: >
           Redesigned site built from user journeys of prospective cadets, parents and volunteers, with a React and
           Google Maps squadron finder fed by AAFC systems.
@@ -490,17 +473,17 @@ references:
       I also contributed to these projects, mostly through Drupal upgrades and security updates:
     others:
       - title: National Office for Child Safety
-        link: https://www.morpht.com/work/national-office-child-safety
+        note: Drupal 10 upgrade coordination (2023)
+        link: https://new.drupal.org/case-study/national-office-for-child-safety-visual-and-ia-uplift-drupalsouth-splash-awards-winner-2024
       - title: AFSA and PPSR
+        note: Drupal 10 upgrade coordination (2023)
         link: https://www.morpht.com/work/afsa
       - title: Australian Skills Quality Authority
-        link: https://www.morpht.com/work/asqa
-      - title: Australian Public Service Commission
-        link: https://www.morpht.com/work/apsc
-      - title: Australian Office of Financial Management
-        link: https://www.morpht.com/work/aofm
+        note: search improvements and the reskin deployment (2019 - 2021)
+        link: https://new.drupal.org/case-study/australian-skills-quality-authority-new-site-on-govcms
       - title: Australian Hydrographic Office
-        link: https://www.morpht.com/work/aho
+        note: security updates (2026)
+        link: https://new.drupal.org/case-study/new-resources-library-for-australian-hydrographic-office
 
 support:
     title: Support

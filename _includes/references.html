@@ -43,7 +43,7 @@
     <p>{{ references.others_intro }}</p>
     <ul>
       {% for other in references.others %}
-      <li><a href="{{ other.link }}" target="_blank" rel="noopener">{{ other.title }}</a></li>
+      <li><a href="{{ other.link }}" target="_blank" rel="noopener">{{ other.title }}</a>{% if other.note %} - {{ other.note }}{% endif %}</li>
       {% endfor %}
     </ul>
   </div>
