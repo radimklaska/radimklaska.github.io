@@ -13,7 +13,10 @@
   "workers_dev": false,
   "preview_urls": true,
 
-  // No routes yet. The cutover PR adds the klaska.net custom domain.
+  // Cloudflare owns this hostname's DNS record and certificate. Existing DNS
+  // records for it must be deleted first: the deploy does not replace them
+  // (error 100117 "already has externally managed DNS records").
+  "routes": [{ "pattern": "klaska.net", "custom_domain": true }],
 
   // Workers Previews (`wrangler preview`, one per PR, see deploy.yml). Nothing to
   // configure for an assets-only Worker, but the block has to exist.
