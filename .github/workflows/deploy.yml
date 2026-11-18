@@ -5,7 +5,9 @@ name: Deploy to Cloudflare
 #   push to main      -> production (klaska.net)
 #   PR opened/pushed  -> a Preview named pr-<N> on workers.dev, linked in one PR
 #                        comment; plus visual regression against production when
-#                        the toolchain changed (job `visual`)
+#                        the toolchain changed (job `visual`), and Lighthouse
+#                        scores of the preview's home page in the comment (job
+#                        `lighthouse`, informational, never blocks)
 #   PR closed/merged  -> the Preview is deleted and the comment says so
 #
 # Secrets: CLOUDFLARE_API_TOKEN (deploy token: Workers Scripts Edit + Account
@@ -193,6 +195,7 @@ jobs:
           | 🔨 This commit | \`${SHA:0:7}\`: ${COMMIT_URL:-n/a} |
           | 🔍 Deploy log | $RUN_URL |
           | 📱 Preview on mobile | <details><summary>Toggle QR code...</summary><br><img src="$QR_URL" width="150" height="150" alt="QR code of $URL"><br><em>Use your smartphone camera to open the preview.</em></details> |
+          | 🔦 Lighthouse | running... (the \`lighthouse\` job fills this in) |
 
           Production is unchanged until the PR is merged. The preview is deleted when the PR is closed.
           EOF
@@ -289,6 +292,92 @@ jobs:
             playwright-report/
           retention-days: 14
           if-no-files-found: ignore
+
+  # Lighthouse scores of the preview's home page, written into the preview-links
+  # comment (like the old Netlify comment). Informational: no thresholds. Mobile
+  # (Lighthouse's default), 3 runs, the run with the median performance score is
+  # reported, because one run's performance score swings a lot on CI runners.
+  # is-crawlable is skipped: previews are noindex on purpose, which would cost SEO
+  # a third of its score.
+  lighthouse:
+    needs: deploy
+    if: needs.deploy.outputs.preview_url != ''
+    runs-on: ubuntu-24.04 # has Google Chrome
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      pull-requests: write # the preview-links comment
+    env:
+      PREVIEW_URL: ${{ needs.deploy.outputs.preview_url }}
+      ROW_PREFIX: '| 🔦 Lighthouse |'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      # lighthouse is pinned exactly in package.json.
+      - name: Install Lighthouse
+        run: npm install --no-audit --no-fund
+
+      - name: Run Lighthouse
+        id: lh
+        run: |
+          mkdir -p lighthouse
+          curl -s -o /dev/null "$PREVIEW_URL/" || true # warm up the preview
+          for i in 1 2 3; do
+            npx lighthouse "$PREVIEW_URL/" --quiet \
+              --chrome-flags="--headless=new --no-sandbox" \
+              --only-categories=performance,accessibility,best-practices,seo \
+              --skip-audits=is-crawlable \
+              --output=json --output=html --output-path="lighthouse/run-$i" < /dev/null
+          done
+          median=$(for i in 1 2 3; do
+              echo "$(jq '.categories.performance.score // 0' "lighthouse/run-$i.report.json") $i"
+            done | sort -n | sed -n 2p | cut -d' ' -f2)
+          cp "lighthouse/run-$median.report.html" lighthouse/report.html
+          # 🟢 90-100, 🟠 50-89, 🔴 0-49: Lighthouse's own colour bands.
+          scores=$(jq -r '[.categories[] | .title as $t | ((.score // 0) * 100 | round) as $s
+              | "\(if $s >= 90 then "🟢" elif $s >= 50 then "🟠" else "🔴" end) **\($t)**: \($s)"] | join("<br>")' \
+            "lighthouse/run-$median.report.json")
+          echo "scores=$scores" >> "$GITHUB_OUTPUT"
+          printf '%s\n' "$scores" | sed 's/<br>/\n/g' >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Keep the report
+        id: report
+        uses: actions/upload-artifact@v4
+        with:
+          name: lighthouse-report
+          path: lighthouse/report.html
+          retention-days: 14
+
+      - name: Put the scores in the preview-links comment
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          PR: ${{ github.event.number }}
+          SCORES: ${{ steps.lh.outputs.scores }}
+          REPORT_URL: ${{ steps.report.outputs.artifact-url }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          if [ -n "$SCORES" ]; then
+            row="$ROW_PREFIX 1 path audited (\`/\`, mobile, median of 3 runs)<br>$SCORES<br>[Full report]($REPORT_URL) |"
+          else
+            row="$ROW_PREFIX failed, see the [deploy log]($RUN_URL) |"
+          fi
+          id=$(gh api "repos/$REPO/issues/$PR/comments" --paginate \
+            --jq ".[] | select(.user.login == \"github-actions[bot]\" and (.body | startswith(\"$PREVIEW_MARKER\"))) | .id" | head -1)
+          if [ -z "$id" ]; then
+            echo "::warning::no preview-links comment to update"
+            exit 0
+          fi
+          body=$(gh api "repos/$REPO/issues/comments/$id" \
+            | jq -r --arg p "$ROW_PREFIX" --arg row "$row" \
+              '.body | split("\n") | map(if startswith($p) then $row else . end) | join("\n")')
+          gh api -X PATCH "repos/$REPO/issues/comments/$id" -f body="$body" > /dev/null
 
   cleanup:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'

@@ -227,6 +227,7 @@ The site has two custom sections as examples:
 - Push to `main`: `npx wrangler deploy` -> https://klaska.net
 - PR opened/pushed: `npx wrangler preview --name pr-<N>` (Workers Previews, open beta) -> a workers.dev preview, linked in one PR comment (preview, this commit, deploy log, and a QR code for phones: `/pr-preview-qr.png`, generated with the pinned `qrcode` package and published only inside the preview; the URL is predicted from `WORKERS_SUBDOMAIN` in `deploy.yml`)
 - PR touching the toolchain (templates, styles, config, deps, workflows): job `visual` screenshots every page on the preview and on production and fails on pixel differences (Playwright, `tests/visual.spec.js`)
+- PR with a preview: job `lighthouse` runs Lighthouse (pinned in `package.json`) on the preview's home page, mobile, 3 runs, and writes the median run's scores plus a link to the HTML report into the same comment. Informational only; `is-crawlable` is skipped because previews are noindex
 - PR closed or merged: `npx wrangler preview delete --name pr-<N>` and the comment says so
 - Secrets: `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID` (same setup as floaty_territory_history)
 
