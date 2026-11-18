@@ -1,0 +1,68 @@
+name: Redirect radimklaska.github.io
+
+# klaska.net is served by Cloudflare (deploy.yml), not GitHub Pages. GitHub Pages
+# is still on for this repo only so that https://radimklaska.github.io/ forwards
+# visitors to klaska.net instead of showing the last pre-Cloudflare build.
+#
+# Publishes one page as both index.html and 404.html, so every path lands on it
+# and is forwarded to the same path on klaska.net (query and #hash kept); the old
+# klaska.net/<project>/ paths then 301 on to the project subdomains (_redirects).
+# GitHub Pages cannot send a real 301, so it is a JavaScript redirect with a
+# meta refresh fallback, marked noindex.
+#
+# Project sites with their own domain (radimklaska.github.io/onewheel/ etc.) are
+# redirected by GitHub before this page is reached.
+#
+# Runs when this file changes on main, or by hand (Actions -> Run workflow).
+
+on:
+  push:
+    branches: ["main"]
+    paths: [".github/workflows/github-io-redirect.yml"]
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+concurrency:
+  group: github-io-redirect
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Build the redirect page
+        run: |
+          mkdir -p out
+          cat > out/index.html <<'HTML'
+          <!DOCTYPE html>
+          <html lang="en">
+          <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1">
+          <meta name="robots" content="noindex">
+          <title>Moved to klaska.net</title>
+          <script>location.replace('https://klaska.net' + location.pathname + location.search + location.hash);</script>
+          <noscript><meta http-equiv="refresh" content="0; url=https://klaska.net/"></noscript>
+          </head>
+          <body>
+          <p>This site has moved to <a href="https://klaska.net/">klaska.net</a>.</p>
+          </body>
+          </html>
+          HTML
+          cp out/index.html out/404.html
+
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: out
+
+      - id: deployment
+        uses: actions/deploy-pages@v5

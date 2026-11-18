@@ -6,7 +6,7 @@ This is a personal portfolio/CV website built with Jekyll and deployed to Cloudf
 
 **Live Sites:**
 - Production: https://klaska.net
-- Hosting: Cloudflare Worker `klaska-net` (custom domain klaska.net). radimklaska.github.io is no longer served from this repo.
+- Hosting: Cloudflare Worker `klaska-net` (custom domain klaska.net). https://radimklaska.github.io/ only forwards to klaska.net (`.github/workflows/github-io-redirect.yml`).
 
 **Base Template:** Modified version of [online-cv](https://github.com/sharu725/online-cv) by Xiaoying Riley
 
@@ -237,6 +237,11 @@ Analytics: Cloudflare Web Analytics, injected by the klaska.net zone (no tag in 
 GitHub Pages project sites that lived at `klaska.net/<repo>/` now have their own subdomains (onewheel,
 owie-flashingtool, airquill, bobiverse, year-planner, floaty) and are 301-redirected
 from the old paths. Keep those rules: printed PCBs and old links point there.
+
+**radimklaska.github.io:** GitHub Pages stays on for this repo only to forward visitors: workflow
+`github-io-redirect.yml` publishes one page (as `index.html` and `404.html`) that sends every path to the
+same path on klaska.net. It runs when that workflow file changes on `main`, or by hand. Do not turn
+Pages off and do not deploy the Jekyll site there.
 
 **Local check:** `bundle exec jekyll build && npx wrangler dev` serves `_site/` with the redirects and 404 handling.
 
