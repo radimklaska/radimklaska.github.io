@@ -8,7 +8,7 @@ sidebar:
 
     # Profile information
     name: Radim Klaška
-    tagline: Drupal Backend developer, Security, DevOps, Tinkerer
+    tagline: Drupal backend developer, security updates & DevOps, hardware tinkerer
     avatar: radimklaska.jpg  #place a 100x100 picture inside /assets/images/ folder and provide the name of the file below
 
     languages:
@@ -32,15 +32,19 @@ career-profile:
     title: Profile
     summary: |
       I started working with computers around the year 2000 and got into developing websites in 2004.
-      I discovered Drupal during the 4.7 / 5.4 era (2007) and stayed with it ever since.
-      
-      By working with various clients I gained lots of experience in site building, theming and even some Linux sysadmin skills.
-      Since then I worked on some big sites as a backend developer and slowly shifted towards DevOps and CI/CD.
-      
-      I'm best known as one of the leading members of the Czech Drupal community. I'm passionate about using best practices
-      and like to discover new elegant solutions.
-      
-      I'm an Open Source enthusiast. This led me through some interesting side quests.
+      I discovered Drupal during the 4.7 / 5.4 era (2007) and stayed with it ever since -
+      I have been on [drupal.org](https://www.drupal.org/u/radimklaska) since 2008.
+
+      By working with various clients I gained lots of experience in site building, theming and Linux sysadmin work.
+      Since then I worked on big sites as a backend developer and technical lead, and shifted towards security updates,
+      DevOps and CI/CD: keeping dozens of Drupal sites patched, upgraded and deployable, and jumping in when something breaks.
+
+      I'm best known as one of the leading members of the Czech Drupal community and the chairman of the
+      Czech Drupal Association. I'm passionate about using best practices and like to discover new elegant solutions.
+
+      I'm an Open Source enthusiast and a hardware tinkerer. This led me through some interesting side quests -
+      reverse engineering electric vehicles, designing PCBs and wiring everything into Home Assistant.
+      Lately I also build AI agent tooling to automate the boring parts of development.
       
       Read on...
 education:
@@ -57,15 +61,28 @@ education:
         Information technology - application of personal computers
           - [https://www.skola-agc.cz](https://www.skola-agc.cz)
 experiences:
-    - role: Drupal Backend developer & DevOps
+    - role: Drupal Developer, Technical Lead & Updates Manager
       time: 2014 - Present
       company: Morpht Pty. Ltd.
       details: |
-        I had a number of roles at [Morpht](https://www.morpht.com) over the years. I started as a Drupal developer and site builder.
-        Did my fair share of theme coding and form altering. Moved over to do more development. Currently, I manage and coordinate
-        security updates across all projects at Morpht. I'm also making sure all of our builds and tests are running smoothly and
-        all developers are set up for success with their local environments using [Lando](https://lando.dev). Automating as much as possible
-        from a developer setting up a local copy to production deployment.
+        I had a number of roles at [Morpht](https://www.morpht.com) over the years. I started as a Drupal developer and site builder,
+        did my fair share of theme coding and form altering, moved to backend development and became technical lead on many projects.
+        Over the years I worked on 150+ projects, mostly for Australian government clients - see [selected projects](#references) below.
+
+        - **Updates Manager** - I manage and coordinate security and maintenance updates across all Morpht projects: about 1,500
+          update tickets on more than 80 projects since 2015, from Drupal core security releases to PHP, Node.js and Composer upgrades.
+          I'm the main contributor to the internal tooling that keeps this repeatable.
+        - **Incident response** - when a site goes down or a highly critical security release lands, I triage, fix or hotfix and
+          coordinate the release across the affected sites.
+        - **Upgrades and migrations** - Drupal 7 to 8/9/10/11 upgrades, multi-site upgrade programmes, moving sites between
+          Acquia, Pantheon and GovCMS (Lagoon) hosting.
+        - **Integrations** - CRM synchronisation, recurring payments and paid content, data feeds and search with Solr.
+        - **Convivial** - long-time core developer of Morpht's Drupal product and its GovCMS / Drupal CMS editions
+          (recipes, release automation, demo sites).
+        - **DevOps** - local environments with [Lando](https://lando.dev) and DDEV, CI/CD in GitHub Actions, automated
+          Let's Encrypt certificates, visual regression testing.
+        - **AI** - semantic search and a chatbot on a Drupal site, and AI-assisted development and review workflows.
+        - **Team coordination and mentoring** - daily stand-ups of the Czech team, onboarding new developers and day-to-day help.
     - role: Drupal developer
       time: 2011 - 2014
       company: PLAYzone s. r. o.
@@ -81,29 +98,131 @@ experiences:
 projects:
     title: Projects
     intro: >
-      You can list your side projects or open source libraries in this
-      section. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-      Vestibulum et ligula in nunc bibendum fringilla a eu lectus.
+      Things I build in my spare time. Most of them are open source.
     assignments:
-      - title: Velocity
-        link: "#hook"
-        tagline: "A responsive website template designed to help startups promote, market and sell their products."
+      - title: Onewheel knowledge base
+        link: https://onewheel.klaska.net
+        tagline: "Right-to-repair documentation for Onewheel boards, including a reverse-engineered BMS firmware write-up."
 
-      - title: DevStudio
-        link: "#"
-        tagline: "A responsive website template designed to help web developers/designers market their services."
+      - title: Onewheel PCBs
+        link: https://github.com/radimklaska/onewheel-pcb
+        tagline: "Open hardware repair and diagnostic boards for Onewheel batteries, designed in KiCad."
 
-      - title: Tempo
-        link: "#"
-        tagline: "A responsive website template designed to help startups promote their products or services and to attract users &amp; investors"
+      - title: Owie Flashing Tool
+        link: https://owie-flashingtool.klaska.net
+        tagline: "Flash Owie battery firmware right from the browser over Web Serial."
 
-      - title: Atom
-        link: "#"
-        tagline: "A comprehensive website template solution for startups/developers to market their mobile apps."
+      - title: VESC Hub for Home Assistant
+        link: https://github.com/radimklaska/ha_veschub
+        tagline: "Home Assistant integration reading battery data from VESC controllers."
 
-      - title: Delta
-        link: "#"
-        tagline: "A responsive Bootstrap one page theme designed to help app developers promote their mobile apps"
+      - title: Drupal on Active24
+        link: https://github.com/radimklaska/active24_drupal
+        tagline: "GitHub Actions deployment pipeline for Drupal on Active24 / Websupport hosting - per-branch preview environments, backups, restore and sync."
+
+      - title: Drupal.cz
+        link: https://www.drupal.cz
+        tagline: "The Czech Drupal community site - migrated from Drupal 6 and kept up to date ever since."
+
+      - title: Let's Encrypt for Drupal
+        link: https://www.morpht.com/blog/announcing-lets-encrypt-drupal
+        tagline: "Open source tooling to run Let's Encrypt certificates on Drupal hosting."
+
+talks:
+    title: Talks, workshops & events
+    intro: >
+      Most of these were in Czech, at Drupal meetups in Prague (usually hosted by Český rozhlas) and at DrupalCamps.
+    # Item format:
+    # - date: YYYY-MM-DD
+    #   title: Talk title
+    #   link: Optional slides / video / event page
+    #   event: Where it was given
+    items:
+      - date: 2023-10-11
+        title: Key concepts of GovCMS worth borrowing
+        link: https://slides.com/radimklaska/govcms
+        event: Drupal meetup "Drupal a government", Prague
+      - date: 2020-02-29
+        title: Drupal TL;DR - Silné stránky Drupalu (with Petr Illek)
+        link: https://wordpress.tv/2020/08/06/radim-klaska-silne-stranky-drupalu/
+        event: WordCamp Prague 2020 (video)
+      - date: 2020-02-29
+        title: Mapping drupal.org mentors
+        link: https://www.drupal.cz/clanky/drupal-setkani-29-2-v-praze
+        event: Drupal meetup, Prague
+      - date: 2019-09-27
+        title: F*ckUp Gracefully
+        link: https://slides.com/radimklaska/fckup
+        event: Drupal meetup "F*ckUpy", Prague
+      - date: 2019-05-18
+        title: Workshop - First clash with code
+        link: https://github.com/Drupalcz/workshop_2019-05_prvni_srazka_s_kodem
+        event: DrupalCamp CS 2019, Hustopeče
+      - date: 2019-02-08
+        title: Workshop - Composer & Git (with Martin Klíma)
+        link: https://slides.com/radimklaska/composer
+        event: Drupal.cz training, Prague
+      - date: 2018-11-30
+        title: Workshop - First clash with code (with Martin Klíma)
+        link: https://www.slideshare.net/slideshow/workshop-2018-1130-pedstaven-drupalu-8/124622346
+        event: Drupal Global Training Days, Prague
+      - date: 2018-09-25
+        title: Introduction to Cypress.io
+        link: https://www.drupal.cz/clanky/drupal-setkani-25-9-v-praze
+        event: Drupal meetup, Prague
+      - date: 2018-03-12
+        title: Git for ages 4 and up
+        link: https://slides.com/radimklaska/git
+        event: Drupal meetup and sprint, Prague
+      - date: 2016-09-14
+        title: Tips & tricks - best practices, deployment, testing
+        link: https://www.slideshare.net/slideshow/tipy-a-triky-best-practices-deployment-testovn/66055107
+        event: Drupal meetup, Prague
+      - date: 2016-05-28
+        title: BigPipe - What have I learned (English)
+        link: https://www.slideshare.net/slideshow/drupal-bigpipe-what-have-i-learned/63373580
+        event: DrupalCamp CS 2016, Bratislava - also panelist on "Drupal in Slovakia and Czechia"
+      - date: 2016-04-26
+        title: Hacked website. What now?
+        link: https://www.slideshare.net/slideshow/hacknut-drupal-web-a-co-te/63374067
+        event: Drupal meetup, Prague
+      - date: 2016-02-17
+        title: Migrations in Drupal 8
+        link: https://www.slideshare.net/slideshow/migrace-v-drupalu-8/63373794
+        event: Drupal meetup, Prague
+      - date: 2015-11-21
+        title: Full-day training - Drupal 8 for beginners (with Petr Illek)
+        event: Drupal Global Training Days, ČVUT Děčín
+    organised_title: Events I organised or helped organise
+    organised:
+      - Regular Drupal meetups and sprints in Prague, 2015 - 2020, and online meetups and Virtual Drupal Pubs in 2020 - 2021
+      - DrupalCamp CS 2015 (Bratislava, with drupal.sk), 2019 (Hustopeče) and the cancelled 2020 edition
+      - Drupal Iron Camp 2016, Prague - organising team
+      - Drupal 8 release party, Global Training Days, Global Contribution Weekend and Drupal pubs in Prague, Teplice, Ústí nad Labem and Moravia
+      - DrupalCon Prague 2022 - volunteer. DrupalCons attended - Prague 2013, Amsterdam 2014, Barcelona 2015, Vienna 2017, Prague 2022
+
+contributions:
+    title: Open source contributions
+    intro: >
+      On [drupal.org](https://www.drupal.org/u/radimklaska) since 2008 and on
+      [GitHub](https://github.com/radimklaska) since 2011.
+    items:
+      - title: Drupal modules I maintain or co-maintain
+        details: >
+          [Sentry](https://www.drupal.org/project/sentry),
+          [Disclaimer](https://www.drupal.org/project/disclaimer),
+          [Let's Encrypt Challenge](https://www.drupal.org/project/letsencrypt_challenge),
+          [Look](https://www.drupal.org/project/look),
+          [Modifiers](https://www.drupal.org/project/modifiers),
+          [Recombee](https://www.drupal.org/project/recombee),
+          [jQuery Migrate 3.x](https://www.drupal.org/project/jquery_migrate)
+      - title: Merged upstream pull requests
+        details: >
+          [Acquia BLT](https://github.com/acquia/blt/pull/1961),
+          [GovCMS 8](https://github.com/govCMS/GovCMS8/pull/472),
+          [BOA / Aegir](https://github.com/omega8cc/boa/pulls?q=is%3Apr+author%3Aradimklaska),
+          [Framework Computer inputmodule-rs](https://github.com/FrameworkComputer/inputmodule-rs/pull/109),
+          Renogy Home Assistant integrations
 
 skills:
     title: Skills &amp; Proficiency
@@ -115,17 +234,273 @@ skills:
       - name: Drupal backend
         level: 90%
 
-      - name: Drupal frontend
-        level: 60%
+      - name: Security & update management
+        level: 95%
 
-      - name: Git, workflows, automation
+      - name: Git, CI/CD, automation
         level: 99%
 
       - name: Linux, CLI, Bash
         level: 90%
 
+      - name: Incident response
+        level: 90%
+
+      - name: Hosting - Pantheon, Acquia, GovCMS, Cloudflare
+        level: 85%
+
+      - name: Team coordination & mentoring
+        level: 80%
+
+      - name: Home Assistant, IoT, embedded
+        level: 75%
+
+      - name: AI agents & tooling
+        level: 70%
+
+      - name: Drupal frontend
+        level: 60%
+
       - name: Sketch & Photoshop
         level: 3%
+
+references:
+    title: Selected projects at Morpht
+    intro: >
+      Projects that Morpht presents publicly and that I worked on. The descriptions are my own summaries of
+      the public case studies, kept here in case the originals move. Screenshots taken in November 2026.
+    # Item format:
+    # - title: Project name
+    #   client: Client organisation
+    #   image: file in assets/images/references/ (640x400 JPEG)
+    #   my_role: What I did, and when (from my own records)
+    #   summary: Short description of the project (own words, based on the case study)
+    #   award: Optional
+    #   site: Live site URL (omit when the site is retired)
+    #   sources: list of {title, link} pointing to the public case studies
+    items:
+      - title: ACECQA
+        client: Australian Children's Education and Care Quality Authority
+        image: acecqa.jpg
+        my_role: Development and long-term support, 2017 - 2026, including the move to Drupal 11.
+        summary: >
+          Redesigned website with content migrated from a legacy CMS. A rebuilt import keeps the National Register
+          of about 16,000 approved services in sync with a third-party SOAP feed, with retries and change detection.
+        site: https://www.acecqa.gov.au/
+        sources:
+          - title: Morpht case study
+            link: https://www.morpht.com/work/acecqa
+          - title: Drupal.org case study
+            link: https://new.drupal.org/case-study/australian-childrens-education-care-quality-authority-new-website
+
+      - title: NSW Trustee and Guardian
+        client: NSW Trustee and Guardian (NSW Government)
+        image: nswtg.jpg
+        my_role: Development and long-term support, 2020 - 2026.
+        summary: >
+          Integration of Microsoft Dynamics CRM, the booking portal, Google Maps and Drupal. Pop-up service locations
+          are entered once in the CRM, appear on the site automatically and residents can find the nearest one and book.
+        sources:
+          - title: Morpht case study
+            link: https://www.morpht.com/work/nsw-trustee-and-guardian
+          - title: Drupal.org case study
+            link: https://new.drupal.org/case-study/nsw-trustee-and-guardian-systems-integration-for-pop-up-locations
+
+      - title: Attorney-General's Department
+        client: Attorney-General's Department
+        image: agd.jpg
+        my_role: Led the Drupal 10 upgrade of the department's GovCMS sites (2023) and ongoing support, 2019 - 2026.
+        summary: >
+          Redesign of the main AGD website, one of five department sites Morpht built on GovCMS. Around 1,200 pages and
+          6,000 publications were reorganised into sections with faceted publication libraries.
+        site: https://www.ag.gov.au/
+        sources:
+          - title: Morpht case study
+            link: https://www.morpht.com/work/attorney-generals-department
+          - title: Drupal.org case study
+            link: https://new.drupal.org/case-study/attorney-generals-department-redesign-development-of-5-sites
+
+      - title: MDSAP
+        client: Medical Device Single Audit Program
+        image: mdsap.jpg
+        my_role: Developer - move to GovCMS, build and support, 2024 - 2026. Credited on drupal.org.
+        summary: >
+          New brand and GovCMS website for the international medical device audit program, built around a document
+          library searchable by category, process or type.
+        award: Splash Awards 2026 - Design/UX
+        site: https://www.mdsap.global/
+        sources:
+          - title: Morpht case study
+            link: https://www.morpht.com/work/mdsap
+          - title: Drupal.org case study
+            link: https://new.drupal.org/case-study/medical-device-single-audit-program-new-drupal-cms-site
+
+      - title: Respect@Work
+        client: Australian Human Rights Commission
+        image: respectatwork.jpg
+        my_role: Development and support, 2023 - 2024.
+        summary: >
+          Website for the national workplace sexual harassment initiative with privacy-preserving personalisation:
+          content adapts to employers or employees using only behaviour stored in the browser, no personal data.
+        sources:
+          - title: Morpht case study
+            link: https://www.morpht.com/work/respect-at-work
+          - title: Drupal.org case study
+            link: https://new.drupal.org/case-study/respectwork-personalisation-and-ux
+
+      - title: Redfern Legal Centre
+        client: Redfern Legal Centre
+        image: rlc.jpg
+        my_role: Development and support, 2021 - 2026.
+        summary: >
+          Pro bono rebuild of the community legal centre's site from Drupal 7 to Drupal 9, with 1,700 migrated articles
+          and resources, online client intake forms and an accessible design the staff can run in-house.
+        award: Splash Awards 2023 - Not-for-profit
+        site: https://rlc.org.au/
+        sources:
+          - title: Morpht case study
+            link: https://www.morpht.com/work/redfern-legal-centre-rlc
+          - title: Drupal.org case study
+            link: https://new.drupal.org/case-study/redfern-legal-centre-opening-the-digital-doors-drupalsouth-splash-awards-winner-2023
+
+      - title: GovFlix
+        client: Morpht (showcase for the GovCMS community)
+        image: govflix.jpg
+        my_role: Developer - AI semantic search and chatbot, content importer, updates, 2024 - 2026. Credited on drupal.org.
+        summary: >
+          Video library for people who build government websites, proving that personalisation works on GovCMS SaaS:
+          Recombee recommendations, semantic search and an AI chatbot answering from site content.
+        sources:
+          - title: Morpht case study
+            link: https://www.morpht.com/work/govflix
+          - title: Drupal.org case study
+            link: https://new.drupal.org/case-study/govflix-content-recommendation-system
+
+      - title: NSW Food Authority
+        client: NSW Food Authority
+        image: foodauthority.jpg
+        my_role: Support, updates and the Drupal 10 upgrade, 2019 - 2026.
+        summary: >
+          Migration from a legacy CMS to GovCMS SaaS with the NSW Design System. External data feeds power public
+          registers and live shellfish harvest-area alerts.
+        site: https://www.foodauthority.nsw.gov.au/
+        sources:
+          - title: Morpht case study
+            link: https://www.morpht.com/work/nsw-food-authority
+          - title: Drupal.org case study
+            link: https://new.drupal.org/case-study/nsw-food-authority-migratation-to-govcms
+
+      - title: Paragraphs Demo
+        client: Morpht (showcase)
+        image: paragraphs-demo.jpg
+        my_role: Development, 2016 - 2021; co-maintainer of the Modifiers module it showcases.
+        summary: >
+          Showcase of component-based page building with Drupal Paragraphs and Morpht's contributed modules
+          such as Modifiers.
+        sources:
+          - title: Morpht case study
+            link: https://www.morpht.com/work/paragraphs-demo
+
+      - title: Australian Energy Regulator
+        client: Australian Energy Regulator
+        image: aer.jpg
+        my_role: Development during the rebuild, 2022 - 2023, and support.
+        summary: >
+          Rebuild of a 10-year-old Drupal 7 site on GovCMS: about 27,000 pages and 42,000 documents migrated without
+          data loss, 32 legacy content types consolidated, externally audited for WCAG 2.1 AA.
+        site: https://www.aer.gov.au/
+        sources:
+          - title: Morpht case study
+            link: https://www.morpht.com/work/aer
+          - title: Drupal.org case study
+            link: https://new.drupal.org/case-study/australian-energy-regulator-digital-transformation
+
+      - title: IPEA
+        client: Independent Parliamentary Expenses Authority
+        image: ipea.jpg
+        my_role: Development and support, 2021 - 2026.
+        summary: >
+          New site where quarterly datasets of 30,000+ expense records are imported in one step and generate
+          parliamentarian pages and reports, replacing hundreds of hand-uploaded PDFs.
+        site: https://www.ipea.gov.au/
+        sources:
+          - title: Morpht case study
+            link: https://www.morpht.com/work/ipea
+          - title: Drupal.org case study
+            link: https://new.drupal.org/case-study/independent-parliamentary-expenses-authority-new-govcms-site
+
+      - title: Therapeutic Goods Administration
+        client: TGA (Department of Health)
+        image: tga.jpg
+        my_role: Environment setup and data import during the build, 2021 - 2022, later updates.
+        summary: >
+          Technical redevelopment of a site with 5.5 million+ visitors a month: 95,000 register records published
+          as searchable pages and filtered search across safety alerts, publications and 17 data feeds.
+        site: https://www.tga.gov.au/
+        sources:
+          - title: Morpht case study
+            link: https://www.morpht.com/work/therapeutic-goods-administration
+          - title: Drupal.org case study
+            link: https://new.drupal.org/case-study/therapeutic-goods-administration-digital-transformation
+
+      - title: Australian Air Force Cadets
+        client: Australian Air Force Cadets
+        image: aafc.jpg
+        my_role: Development and support, 2021 - 2025.
+        summary: >
+          Redesigned site built from user journeys of prospective cadets, parents and volunteers, with a React and
+          Google Maps squadron finder fed by AAFC systems.
+        site: https://www.airforcecadets.gov.au/
+        sources:
+          - title: Morpht case study
+            link: https://www.morpht.com/work/australian-air-force-cadets-aafc
+          - title: Drupal.org case study
+            link: https://new.drupal.org/case-study/australian-airforce-cadets-creating-a-better-user-journey
+
+      - title: Reef Guardian Schools
+        client: Great Barrier Reef Marine Park Authority
+        image: rgs.jpg
+        my_role: Contributor, 2025, including Drupal 11 preparation. Credited on drupal.org.
+        summary: >
+          Rebuild and move from GovCMS PaaS to SaaS: 382 schools, 800+ users and 150+ resources migrated without
+          anyone re-registering, plus a teacher resource library, schools map and online action plans.
+        site: https://www.reefed.edu.au/
+        sources:
+          - title: Morpht case study
+            link: https://www.morpht.com/work/rgs
+          - title: Drupal.org case study
+            link: https://new.drupal.org/case-study/reef-guardian-school-govcms-saas-redevelopment
+
+      - title: GreenPower
+        client: GreenPower renewable energy program
+        image: greenpower.jpg
+        my_role: Build pipeline, 2020. Credited on drupal.org.
+        summary: >
+          Site rebuild with a React and Google Maps generator locator, a directory of 400+ accredited providers and an
+          energy offset calculator.
+        site: https://www.greenpower.gov.au/
+        sources:
+          - title: Morpht case study
+            link: https://www.morpht.com/work/greenpower
+          - title: Drupal.org case study
+            link: https://new.drupal.org/case-study/greenpower-energy-generators-locator
+
+    # Projects with a smaller part of my work (updates, upgrade coordination).
+    others_intro: >
+      I also contributed to these projects, mostly through Drupal upgrades and security updates:
+    others:
+      - title: National Office for Child Safety
+        link: https://www.morpht.com/work/national-office-child-safety
+      - title: AFSA and PPSR
+        link: https://www.morpht.com/work/afsa
+      - title: Australian Skills Quality Authority
+        link: https://www.morpht.com/work/asqa
+      - title: Australian Public Service Commission
+        link: https://www.morpht.com/work/apsc
+      - title: Australian Office of Financial Management
+        link: https://www.morpht.com/work/aofm
+      - title: Australian Hydrographic Office
+        link: https://www.morpht.com/work/aho
 
 support:
     title: Support

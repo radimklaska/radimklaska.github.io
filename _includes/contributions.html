@@ -1,0 +1,27 @@
+{% assign contributions = site.data.data.contributions %}
+{% if contributions %}
+<section class="section contributions-section">
+  <h2 class="section-title">
+    <span class="fa-stack fa-xs">
+      <i class="fas fa-circle fa-stack-2x"></i>
+      <i class="fas fa-code-branch fa-stack-1x fa-inverse"></i>
+    </span>
+    {{ contributions.title }}
+  </h2>
+
+  {% if contributions.intro %}
+  <div class="intro">
+    {{ contributions.intro | markdownify }}
+  </div><!--//intro-->
+  {% endif %}
+
+  {% for item in contributions.items %}
+  <div class="item">
+    <h3 class="contribution-title">{{ item.title }}</h3>
+    <div class="details">
+      {{ item.details | markdownify }}
+    </div>
+  </div><!--//item-->
+  {% endfor %}
+</section><!--//section-->
+{% endif %}
