@@ -225,7 +225,7 @@ The site has two custom sections as examples:
 - Build the site with `bundle exec jekyll build` (Ruby from `.ruby-version`)
 - `npm install` (wrangler is pinned in `package.json`; `package-lock.json` is gitignored)
 - Push to `main`: `npx wrangler deploy` -> https://klaska.net
-- PR opened/pushed: `npx wrangler preview --name pr-<N>` (Workers Previews, open beta) -> a workers.dev preview, linked in one PR comment
+- PR opened/pushed: `npx wrangler preview --name pr-<N>` (Workers Previews, open beta) -> a workers.dev preview, linked in one PR comment (preview, this commit, deploy log, and a QR code for phones: `/pr-preview-qr.png`, generated with the pinned `qrcode` package and published only inside the preview; the URL is predicted from `WORKERS_SUBDOMAIN` in `deploy.yml`)
 - PR touching the toolchain (templates, styles, config, deps, workflows): job `visual` screenshots every page on the preview and on production and fails on pixel differences (Playwright, `tests/visual.spec.js`)
 - PR closed or merged: `npx wrangler preview delete --name pr-<N>` and the comment says so
 - Secrets: `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID` (same setup as floaty_territory_history)

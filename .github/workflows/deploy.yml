@@ -116,6 +116,13 @@ jobs:
 
       # Workers Previews (open beta): one Preview per PR, updated on every push. It
       # creates the Worker if it does not exist yet, without deploying any route.
+      #
+      # The PR comment shows a QR code of the preview URL for opening it on a phone.
+      # GitHub comments cannot embed data: images, so the PNG is published inside the
+      # preview itself (/pr-preview-qr.png, previews only, never production). That
+      # needs the URL before the upload: it is predicted from the Worker name and the
+      # account's workers.dev subdomain, then checked against what wrangler reports.
+      # On a mismatch the QR is redone and the preview uploaded once more.
       - name: Upload the PR preview
         id: preview
         if: env.IS_PR == 'true' && env.HAS_CF_TOKEN == 'true'
@@ -123,25 +130,44 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           PR: ${{ github.event.number }}
+          WORKERS_SUBDOMAIN: radim-3ce # <subdomain>.workers.dev of the Cloudflare account
+          QR_FILE: pr-preview-qr.png
         run: |
-          rc=0
-          npx wrangler preview --name "pr-$PR" --message "PR #$PR" --json > preview.out 2> preview.err || rc=$?
-          if [ "$rc" -ne 0 ]; then
-            cat preview.out preview.err
-            echo "::error::wrangler preview failed (exit $rc)"
-            exit "$rc"
+          upload() {
+            rc=0
+            npx wrangler preview --name "pr-$PR" --message "PR #$PR" --json > preview.out 2> preview.err || rc=$?
+            if [ "$rc" -ne 0 ]; then
+              cat preview.out preview.err
+              echo "::error::wrangler preview failed (exit $rc)"
+              exit "$rc"
+            fi
+            # Keep only the JSON document, in case anything else reached stdout.
+            sed -n '/^{/,$p' preview.out > preview.json
+            url=$(jq -r '.preview.urls[0] // empty' preview.json)
+            url=${url%/}
+            commit_url=$(jq -r '.deployment.urls[0] // empty' preview.json)
+            if [ -z "$url" ]; then
+              cat preview.out preview.err
+              echo "::error::wrangler preview returned no URL"
+              exit 1
+            fi
+          }
+          # White background and the default quiet zone, so it scans in GitHub's dark mode too.
+          qr() { npx qrcode -t png -w 300 -e M -d 000000ff -l ffffffff -o "_site/$QR_FILE" "$1" < /dev/null; }
+
+          worker=$(sed -n 's/^ *"name": *"\([^"]*\)".*/\1/p' wrangler.jsonc | head -1)
+          expected="https://pr-$PR-$worker.$WORKERS_SUBDOMAIN.workers.dev"
+          qr "$expected"
+          upload
+          if [ "$url" != "$expected" ]; then
+            echo "::warning::preview URL is $url, expected $expected (update WORKERS_SUBDOMAIN); uploading again with a corrected QR code"
+            qr "$url"
+            upload
           fi
-          # Keep only the JSON document, in case anything else reached stdout.
-          sed -n '/^{/,$p' preview.out > preview.json
-          url=$(jq -r '.preview.urls[0] // empty' preview.json)
-          commit_url=$(jq -r '.deployment.urls[0] // empty' preview.json)
-          if [ -z "$url" ]; then
-            cat preview.out preview.err
-            echo "::error::wrangler preview returned no URL"
-            exit 1
-          fi
+
           echo "url=$url" >> "$GITHUB_OUTPUT"
           echo "commit_url=$commit_url" >> "$GITHUB_OUTPUT"
+          echo "qr_url=$url/$QR_FILE" >> "$GITHUB_OUTPUT"
           printf 'Preview: %s\nThis commit: %s\n' "$url" "$commit_url" >> "$GITHUB_STEP_SUMMARY"
 
       - name: Post the preview links on the PR
@@ -153,10 +179,24 @@ jobs:
           SHA: ${{ github.event.pull_request.head.sha }}
           URL: ${{ steps.preview.outputs.url }}
           COMMIT_URL: ${{ steps.preview.outputs.commit_url }}
+          QR_URL: ${{ steps.preview.outputs.qr_url }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
-          # shellcheck disable=SC2016 # literal backticks are Markdown
-          body=$(printf '%s\n**Preview of this PR:** %s\nThis commit (`%s`): %s\nProduction is unchanged until the PR is merged. The preview is deleted when the PR is closed.' \
-            "$PREVIEW_MARKER" "$URL" "${SHA:0:7}" "${COMMIT_URL:-n/a}")
+          # The body must start with PREVIEW_MARKER: this step and the cleanup job find the comment by it.
+          body=$(cat <<EOF
+          $PREVIEW_MARKER
+          ### ✅ Preview of this PR is ready
+
+          | | |
+          |:-:|---|
+          | 😎 Preview | **$URL** |
+          | 🔨 This commit | \`${SHA:0:7}\`: ${COMMIT_URL:-n/a} |
+          | 🔍 Deploy log | $RUN_URL |
+          | 📱 Preview on mobile | <details><summary>Toggle QR code...</summary><br><img src="$QR_URL" width="150" height="150" alt="QR code of $URL"><br><em>Use your smartphone camera to open the preview.</em></details> |
+
+          Production is unchanged until the PR is merged. The preview is deleted when the PR is closed.
+          EOF
+          )
           id=$(gh api "repos/$REPO/issues/$PR/comments" --paginate \
             --jq ".[] | select(.user.login == \"github-actions[bot]\" and (.body | startswith(\"$PREVIEW_MARKER\"))) | .id" | head -1)
           if [ -n "$id" ]; then
