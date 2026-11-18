@@ -226,7 +226,7 @@ Analytics: Cloudflare Web Analytics, injected by the klaska.net zone (no tag in 
 
 **Redirects:** `_redirects` (listed in `include` in `_config.yml`, because Jekyll skips `_` files). The former
 GitHub Pages project sites that lived at `klaska.net/<repo>/` now have their own subdomains (onewheel,
-owie-flashingtool, airquill, bobiverse, year-planner, random-things-i-explain-often, floaty) and are 301-redirected
+owie-flashingtool, airquill, bobiverse, year-planner, floaty) and are 301-redirected
 from the old paths. Keep those rules: printed PCBs and old links point there.
 
 **Local check:** `bundle exec jekyll build && npx wrangler dev` serves `_site/` with the redirects and 404 handling.

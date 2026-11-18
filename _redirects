@@ -11,7 +11,6 @@
 /airquill                                https://airquill.klaska.net/ 301
 /bobiverse                               https://bobiverse.klaska.net/ 301
 /year_planner                            https://year-planner.klaska.net/ 301
-/random-things-i-explain-often           https://random-things-i-explain-often.klaska.net/ 301
 # Already moved to its own Cloudflare Worker (floaty.klaska.net), a single-page map.
 /floaty_territory_history                https://floaty.klaska.net/ 301
 
@@ -25,5 +24,4 @@
 /airquill/*                              https://airquill.klaska.net/:splat 301
 /bobiverse/*                             https://bobiverse.klaska.net/:splat 301
 /year_planner/*                          https://year-planner.klaska.net/:splat 301
-/random-things-i-explain-often/*         https://random-things-i-explain-often.klaska.net/:splat 301
 /floaty_territory_history/*              https://floaty.klaska.net/ 301
