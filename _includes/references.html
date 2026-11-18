@@ -1,0 +1,52 @@
+{% assign references = site.data.data.references %}
+{% if references %}
+<section class="section references-section" id="references">
+  <h2 class="section-title">
+    <span class="fa-stack fa-xs">
+      <i class="fas fa-circle fa-stack-2x"></i>
+      <i class="fas fa-landmark fa-stack-1x fa-inverse"></i>
+    </span>
+    {{ references.title }}
+  </h2>
+
+  {% if references.intro %}
+  <div class="intro">
+    {{ references.intro | markdownify }}
+  </div><!--//intro-->
+  {% endif %}
+
+  {% for item in references.items %}
+  <div class="item">
+    {% if item.image %}
+    <div class="reference-image">
+      <img src="{{ site.baseurl }}/assets/images/references/{{ item.image }}" alt="Screenshot of {{ item.title }}" width="640" height="400" loading="lazy">
+    </div>
+    {% endif %}
+    <div class="reference-body">
+      <h3 class="reference-title">{{ item.title }}</h3>
+      {% if item.client %}<div class="reference-client">{{ item.client }}</div>{% endif %}
+      {% if item.my_role %}<p class="reference-role"><strong>My part:</strong> {{ item.my_role }}{% if item.credit %} <a href="{{ item.credit }}" target="_blank" rel="noopener">Credited on drupal.org</a>.{% endif %}</p>{% endif %}
+      {% if item.summary %}<p class="reference-summary">{{ item.summary }}</p>{% endif %}
+      {% if item.award %}<p class="reference-award"><i class="fas fa-trophy"></i> {{ item.award }}</p>{% endif %}
+      <ul class="reference-links list-inline">
+        {% if item.site %}<li class="list-inline-item"><a href="{{ item.site }}" target="_blank" rel="noopener">Live site</a></li>{% endif %}
+        {% for source in item.sources %}
+        <li class="list-inline-item"><a href="{{ source.link }}" target="_blank" rel="noopener">{{ source.title }}</a></li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div><!--//item-->
+  {% endfor %}
+
+  {% if references.others %}
+  <div class="reference-others">
+    <p>{{ references.others_intro }}</p>
+    <ul>
+      {% for other in references.others %}
+      <li><a href="{{ other.link }}" target="_blank" rel="noopener">{{ other.title }}</a>{% if other.note %} - {{ other.note }}{% endif %}</li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+</section><!--//section-->
+{% endif %}

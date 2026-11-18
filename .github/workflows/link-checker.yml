@@ -33,10 +33,14 @@ jobs:
           # grows with the site and returns intermittent 403s.
           # morpht.com and x.com return 403 Forbidden to the runner (bot
           # blocking), so they cannot be verified from CI.
+          # The client sites in the "Selected projects" section (Australian
+          # government sites, rlc.org.au, mdsap.global, reefed.edu.au) sit
+          # behind bot protection that answers 403 or drops the connection
+          # for non-browser clients.
           # The cvut.cz link is checked in the next step instead: that server
           # does not send its intermediate certificate, so TLS verification
           # fails even though the page loads fine in browsers.
-          args: '--no-progress --root-dir _site/ --exclude cvut.cz/en/faculty-of-nuclear-sciences-and-physical-engineering --exclude linkedin.com --exclude reddit.com --exclude instagram.com --exclude timeanddate.com --exclude alza.cz --exclude slack.com --exclude morpht.com --exclude x.com --exclude /onewheel _site/'
+          args: '--no-progress --root-dir _site/ --exclude cvut.cz/en/faculty-of-nuclear-sciences-and-physical-engineering --exclude linkedin.com --exclude reddit.com --exclude instagram.com --exclude timeanddate.com --exclude alza.cz --exclude slack.com --exclude morpht.com --exclude x.com --exclude /onewheel --exclude \.gov\.au --exclude rlc\.org\.au --exclude mdsap\.global --exclude reefed\.edu\.au _site/'
           fail: true
 
       # Links whose server has a broken certificate chain: still verify that

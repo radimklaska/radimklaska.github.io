@@ -39,9 +39,14 @@ radimklaska.github.io/
 │   └── data.yml            # ALL content data (profile, experience, skills, etc.)
 ├── _includes/              # Reusable HTML components
 │   ├── sidebar.html        # Left sidebar with profile info
+│   ├── tldr.html           # TL;DR summary above the profile
 │   ├── career-profile.html # Career summary section
 │   ├── experiences.html    # Work experience timeline
+│   ├── references.html     # Selected projects at Morpht (screenshots in assets/images/references/)
 │   ├── skills.html         # Skills & proficiency bars
+│   ├── talks.html          # Talks, workshops & events
+│   ├── contributions.html  # Open source contributions
+│   ├── projects.html       # Side projects
 │   ├── education.html      # Education history
 │   ├── contact.html        # Contact information
 │   ├── language.html       # Language proficiencies
@@ -50,8 +55,7 @@ radimklaska.github.io/
 │   ├── onewheel.html      # OneWheel reverse engineering section (CUSTOM)
 │   ├── head.html          # HTML head section
 │   ├── footer.html        # Site footer
-│   ├── scripts.html       # JavaScript includes
-│   └── analytics.html     # Google Analytics tracking
+│   └── scripts.html       # JavaScript includes
 ├── _layouts/
 │   ├── default.html       # Main page template
 │   └── compress.html      # HTML compression wrapper
@@ -131,13 +135,18 @@ Sections are componentized in `_includes/` and assembled in `index.html`:
 
 **Pattern in `index.html`:**
 ```liquid
+{% include tldr.html %}
 {% include career-profile.html %}
 {% unless site.data.data.sidebar.education %}
   {% include education.html %}
 {% endunless %}
 {% include experiences.html %}
+{% include references.html %}
 {% include skills.html %}
 {% include czda.html %}      # Custom section
+{% include talks.html %}
+{% include contributions.html %}
+{% include projects.html %}
 {% include onewheel.html %}  # Custom section
 ```
 
@@ -341,13 +350,6 @@ education:
     time: [Year or Period]
     details: |
       [Description]
-```
-
-### 6. Modifying Analytics
-
-```yaml
-# In _config.yml
-analytics: UA-XXXXXXX-X  # Google Analytics tracking ID
 ```
 
 ## Important Files Reference
