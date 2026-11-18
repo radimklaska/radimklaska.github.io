@@ -8,15 +8,14 @@ url: 'https://klaska.net'
 # disabling since we are using a custom domain
 #baseurl: '/online-cv'
 
-include: [".well-known"]
+include: [".well-known", "_redirects"]
 
 description: Drupal geek since 5.4 (It was 2007, right?)
 # Style will be applied only after restarting the build or serve. Just choose one of the options.
 theme_skin: blue # blue turquoise green berry orange ceramic
 chrome_mobile_color: #use hex colors (ex:#1976d2) or leave empty if you don't want a color for chrome mobile searchbar
 
-# Tracker
-analytics: UA-2291055-1
+# Tracker: none here. Cloudflare Web Analytics is injected by the klaska.net zone.
 
 # Sass/SCSS
 sass:
@@ -41,14 +40,13 @@ safe: false
 exclude:
   - CLAUDE.md
   - README.md
-  - NETLIFY_SETUP.md
   - Gemfile
   - Gemfile.lock
   - bin/
   - vendor/
   - .gitignore
   - .ruby-version
-  - netlify.toml
+  - wrangler.jsonc
   # Visual regression tooling
   - package.json
   - package-lock.json

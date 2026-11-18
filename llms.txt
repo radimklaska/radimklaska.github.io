@@ -21,7 +21,7 @@ Business ID (IČO) 88124444, not a VAT payer. Office: Cowosedlice.cz, Míru 218,
 
 - [Trailbus.eu](https://trailbus.eu): his camper van and van trips
 - [VanAssistant](https://vanassistant.eu): Home Assistant for camper vans
-- [Onewheel notes](https://klaska.net/onewheel/)
+- [Onewheel notes](https://onewheel.klaska.net/)
 - [DCA Futures Bot Calculator](https://dcacalc.com/)
 - [Crypto Watchlists](https://cryptowatchlists.net/)
 
