@@ -1,9 +1,9 @@
 /**
- * Visual regression: PR deploy preview vs production.
+ * Visual regression: PR preview (Cloudflare Workers Preview) vs production.
  *
  * This runs only when the *toolchain* changes (Gemfile, _config.yml, _includes,
  * _sass, _plugins, ...) and never when page content changes - see
- * .github/workflows/visual-regression.yml. That constraint is what makes the test
+ * the `visual` job in .github/workflows/deploy.yml. That constraint is what makes the test
  * meaningful: if the content is identical on both sides, any pixel difference was
  * caused by the dependency or layout change under review, which is exactly what we
  * want a human to look at.

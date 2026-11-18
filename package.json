@@ -1,7 +1,7 @@
 {
   "name": "klaska-net-site-tests",
   "private": true,
-  "description": "Deploy tooling (wrangler, Cloudflare) and visual regression tests comparing a PR's Netlify deploy preview against production.",
+  "description": "Deploy tooling (wrangler, Cloudflare) and visual regression tests comparing a PR's Cloudflare preview against production.",
   "scripts": {
     "test:visual": "playwright test"
   },

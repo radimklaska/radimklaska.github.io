@@ -22,7 +22,7 @@ This is a personal portfolio/CV website built with Jekyll and deployed to Cloudf
 ### Build & Deployment
 - **GitHub Actions** - CI/CD pipeline (`.github/workflows/deploy.yml`): Jekyll build + `wrangler deploy`
 - **Cloudflare Workers static assets** - Hosting (`wrangler.jsonc`), redirects in `_redirects`
-- **Netlify** - Alternative deployment with PR preview capabilities (configured but optional)
+- **Cloudflare Workers Previews** - one preview per PR (no Netlify)
 
 ### Dependencies
 Key gems managed via `Gemfile`:
@@ -84,8 +84,6 @@ radimklaska.github.io/
 ├── 404.html              # Custom 404 error page
 ├── Gemfile               # Ruby dependencies
 ├── Gemfile.lock          # Locked dependency versions
-├── netlify.toml          # Netlify configuration (optional)
-├── NETLIFY_SETUP.md      # Netlify setup instructions
 ├── .ruby-version         # Ruby version specification
 ├── .gitignore            # Git ignore rules
 ├── wrangler.jsonc        # Cloudflare Worker config (custom domain klaska.net)
@@ -218,7 +216,9 @@ The site has two custom sections as examples:
 - Build the site with `bundle exec jekyll build` (Ruby from `.ruby-version`)
 - `npm install` (wrangler is pinned in `package.json`; `package-lock.json` is gitignored)
 - Push to `main`: `npx wrangler deploy` -> https://klaska.net
-- PR: `npx wrangler versions upload --preview-alias pr-<N>` -> a noindex workers.dev preview, linked in a PR comment
+- PR opened/pushed: `npx wrangler preview --name pr-<N>` (Workers Previews, open beta) -> a workers.dev preview, linked in one PR comment
+- PR touching the toolchain (templates, styles, config, deps, workflows): job `visual` screenshots every page on the preview and on production and fails on pixel differences (Playwright, `tests/visual.spec.js`)
+- PR closed or merged: `npx wrangler preview delete --name pr-<N>` and the comment says so
 - Secrets: `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID` (same setup as floaty_territory_history)
 
 **Config:** `wrangler.jsonc` (assets-only Worker serving `_site/`, `404.html` for misses, custom domain klaska.net).
@@ -230,16 +230,6 @@ owie-flashingtool, airquill, bobiverse, year-planner, floaty) and are 301-redire
 from the old paths. Keep those rules: printed PCBs and old links point there.
 
 **Local check:** `bundle exec jekyll build && npx wrangler dev` serves `_site/` with the redirects and 404 handling.
-
-### Netlify Deployment (Optional)
-
-Configured via `netlify.toml`:
-- Build command: `bundle exec jekyll build`
-- Publish directory: `_site`
-- Ruby version: 2.3.3 (note: different from local `.ruby-version`)
-- Provides PR preview deployments
-
-See `NETLIFY_SETUP.md` for detailed setup instructions.
 
 ## Key Conventions
 
@@ -372,9 +362,8 @@ analytics: UA-XXXXXXX-X  # Google Analytics tracking ID
 | `_sass/*.scss` | Stylesheets | ✅ YES - For styling changes |
 | `index.html` | Homepage structure | ⚠️ CAREFUL - Section order only |
 | `.github/workflows/` | CI/CD config | ⚠️ CAREFUL - Advanced only |
-| `netlify.toml` | Netlify config | ⚠️ CAREFUL - If using Netlify |
 | `wrangler.jsonc` | Cloudflare Worker + custom domain | ⚠️ CAREFUL - Hosting config |
-| `_redirects` | Redirects (Cloudflare + Netlify syntax) | ✅ YES - Keep the old project-site paths |
+| `_redirects` | Redirects (Cloudflare Workers static assets syntax) | ✅ YES - Keep the old project-site paths |
 
 ## Troubleshooting Guide
 
@@ -503,7 +492,7 @@ Jekyll Build
     ↓
 Static Site (_site/)
     ↓
-Deployment (Cloudflare Worker / Netlify previews)
+Deployment (Cloudflare Worker; PR previews are Workers Previews)
 ```
 
 ## Custom Sections Pattern
