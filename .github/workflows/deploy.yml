@@ -3,10 +3,14 @@ name: Deploy to Cloudflare
 # Builds the Jekyll site and deploys _site/ to Cloudflare (assets-only Worker,
 # see wrangler.jsonc). No Netlify: previews are Cloudflare Workers Previews.
 #   push to main      -> production (klaska.net)
-#   PR opened/pushed  -> a Preview named pr-<N> on workers.dev, linked in one PR
-#                        comment; plus visual regression against production when
-#                        the toolchain changed (job `visual`)
-#   PR closed/merged  -> the Preview is deleted and the comment says so
+#   PR opened/pushed  -> a Preview named pr-<N> on workers.dev, linked in a new PR
+#                        comment (earlier ones are collapsed as outdated); plus
+#                        visual regression against production when the toolchain
+#                        changed (job `visual`), and Lighthouse
+#                        scores of the preview's home page in the comment (job
+#                        `lighthouse`, informational, never blocks)
+#   PR closed/merged  -> the Preview is deleted, the preview comments are collapsed
+#                        and a new comment says so
 #
 # Secrets: CLOUDFLARE_API_TOKEN (deploy token: Workers Scripts Edit + Account
 # Settings Read on the account, Workers Routes Edit + Zone Read on klaska.net),
@@ -31,6 +35,27 @@ concurrency:
 
 env:
   PREVIEW_MARKER: '<!-- preview-links -->'
+  # Shell function used by the steps that post preview comments: collapses (GitHub
+  # "minimize", reason OUTDATED) every earlier preview comment on the PR, except the
+  # node ID given as $1, and prints the IDs it collapsed. Content stays readable.
+  COLLAPSE_OLD_PREVIEW_COMMENTS: |
+    collapse_old_preview_comments() {
+      gh api graphql --paginate -f owner="${REPO%/*}" -f name="${REPO#*/}" -F pr="$PR" -f query='
+        query($owner: String!, $name: String!, $pr: Int!, $endCursor: String) {
+          repository(owner: $owner, name: $name) { pullRequest(number: $pr) {
+            comments(first: 100, after: $endCursor) {
+              pageInfo { hasNextPage endCursor }
+              nodes { id isMinimized author { login } body } } } } }' \
+        --jq ".data.repository.pullRequest.comments.nodes[]
+          | select(.author.login == \"github-actions\" and (.isMinimized | not)
+                   and (.body | startswith(\"$PREVIEW_MARKER\"))) | .id" |
+      while read -r node; do
+        [ "$node" = "${1:-}" ] && continue
+        gh api graphql -f id="$node" -f query='mutation($id: ID!) {
+          minimizeComment(input: {subjectId: $id, classifier: OUTDATED}) { minimizedComment { isMinimized } } }' > /dev/null
+        echo "$node"
+      done
+    }
 
 jobs:
   deploy:
@@ -45,6 +70,7 @@ jobs:
       HAS_CF_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN != '' }}
     outputs:
       preview_url: ${{ steps.preview.outputs.url }}
+      comment_id: ${{ steps.comment.outputs.id }}
       toolchain_changed: ${{ steps.changes.outputs.toolchain }}
 
     steps:
@@ -116,6 +142,13 @@ jobs:
 
       # Workers Previews (open beta): one Preview per PR, updated on every push. It
       # creates the Worker if it does not exist yet, without deploying any route.
+      #
+      # The PR comment shows a QR code of the preview URL for opening it on a phone.
+      # GitHub comments cannot embed data: images, so the PNG is published inside the
+      # preview itself (/pr-preview-qr.png, previews only, never production). That
+      # needs the URL before the upload: it is predicted from the Worker name and the
+      # account's workers.dev subdomain, then checked against what wrangler reports.
+      # On a mismatch the QR is redone and the preview uploaded once more.
       - name: Upload the PR preview
         id: preview
         if: env.IS_PR == 'true' && env.HAS_CF_TOKEN == 'true'
@@ -123,28 +156,50 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           PR: ${{ github.event.number }}
+          WORKERS_SUBDOMAIN: radim-3ce # <subdomain>.workers.dev of the Cloudflare account
+          QR_FILE: pr-preview-qr.png
         run: |
-          rc=0
-          npx wrangler preview --name "pr-$PR" --message "PR #$PR" --json > preview.out 2> preview.err || rc=$?
-          if [ "$rc" -ne 0 ]; then
-            cat preview.out preview.err
-            echo "::error::wrangler preview failed (exit $rc)"
-            exit "$rc"
+          upload() {
+            rc=0
+            npx wrangler preview --name "pr-$PR" --message "PR #$PR" --json > preview.out 2> preview.err || rc=$?
+            if [ "$rc" -ne 0 ]; then
+              cat preview.out preview.err
+              echo "::error::wrangler preview failed (exit $rc)"
+              exit "$rc"
+            fi
+            # Keep only the JSON document, in case anything else reached stdout.
+            sed -n '/^{/,$p' preview.out > preview.json
+            url=$(jq -r '.preview.urls[0] // empty' preview.json)
+            url=${url%/}
+            commit_url=$(jq -r '.deployment.urls[0] // empty' preview.json)
+            if [ -z "$url" ]; then
+              cat preview.out preview.err
+              echo "::error::wrangler preview returned no URL"
+              exit 1
+            fi
+          }
+          # White background and the default quiet zone, so it scans in GitHub's dark mode too.
+          qr() { npx qrcode -t png -w 300 -e M -d 000000ff -l ffffffff -o "_site/$QR_FILE" "$1" < /dev/null; }
+
+          worker=$(sed -n 's/^ *"name": *"\([^"]*\)".*/\1/p' wrangler.jsonc | head -1)
+          expected="https://pr-$PR-$worker.$WORKERS_SUBDOMAIN.workers.dev"
+          qr "$expected"
+          upload
+          if [ "$url" != "$expected" ]; then
+            echo "::warning::preview URL is $url, expected $expected (update WORKERS_SUBDOMAIN); uploading again with a corrected QR code"
+            qr "$url"
+            upload
           fi
-          # Keep only the JSON document, in case anything else reached stdout.
-          sed -n '/^{/,$p' preview.out > preview.json
-          url=$(jq -r '.preview.urls[0] // empty' preview.json)
-          commit_url=$(jq -r '.deployment.urls[0] // empty' preview.json)
-          if [ -z "$url" ]; then
-            cat preview.out preview.err
-            echo "::error::wrangler preview returned no URL"
-            exit 1
-          fi
+
           echo "url=$url" >> "$GITHUB_OUTPUT"
           echo "commit_url=$commit_url" >> "$GITHUB_OUTPUT"
+          echo "qr_url=$url/$QR_FILE" >> "$GITHUB_OUTPUT"
           printf 'Preview: %s\nThis commit: %s\n' "$url" "$commit_url" >> "$GITHUB_STEP_SUMMARY"
 
+      # A new comment per deploy, so each one keeps the links of its own commit; the
+      # earlier ones are collapsed as outdated (still readable when expanded).
       - name: Post the preview links on the PR
+        id: comment
         if: steps.preview.outputs.url != ''
         env:
           GH_TOKEN: ${{ github.token }}
@@ -153,17 +208,31 @@ jobs:
           SHA: ${{ github.event.pull_request.head.sha }}
           URL: ${{ steps.preview.outputs.url }}
           COMMIT_URL: ${{ steps.preview.outputs.commit_url }}
+          QR_URL: ${{ steps.preview.outputs.qr_url }}
+          RUN_ID: ${{ github.run_id }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
-          # shellcheck disable=SC2016 # literal backticks are Markdown
-          body=$(printf '%s\n**Preview of this PR:** %s\nThis commit (`%s`): %s\nProduction is unchanged until the PR is merged. The preview is deleted when the PR is closed.' \
-            "$PREVIEW_MARKER" "$URL" "${SHA:0:7}" "${COMMIT_URL:-n/a}")
-          id=$(gh api "repos/$REPO/issues/$PR/comments" --paginate \
-            --jq ".[] | select(.user.login == \"github-actions[bot]\" and (.body | startswith(\"$PREVIEW_MARKER\"))) | .id" | head -1)
-          if [ -n "$id" ]; then
-            gh api -X PATCH "repos/$REPO/issues/comments/$id" -f body="$body" > /dev/null
-          else
-            gh pr comment "$PR" --repo "$REPO" --body "$body"
-          fi
+          # The body must start with PREVIEW_MARKER: that is how earlier preview comments are found.
+          body=$(cat <<EOF
+          $PREVIEW_MARKER
+          ### ✅ Preview of \`${SHA:0:7}\` is ready
+
+          | Name | Link |
+          |:-:|---|
+          | 😎 Preview | **$URL** |
+          | 🔨 This commit | \`${SHA:0:7}\`: ${COMMIT_URL:-n/a} |
+          | 🔍 Deploy log | [Workflow run $RUN_ID: build, deploy, visual, Lighthouse]($RUN_URL) |
+          | 📱 Preview on mobile | <details><summary>Toggle QR code...</summary><br><img src="$QR_URL" width="150" height="150" alt="QR code of $URL"><br><em>Use your smartphone camera to open the preview.</em></details> |
+          | 🔦 Lighthouse | running... (the \`lighthouse\` job fills this in) |
+
+          Production is unchanged until the PR is merged. The preview is deleted when the PR is closed.
+          EOF
+          )
+          read -r id node < <(gh api "repos/$REPO/issues/$PR/comments" -f body="$body" --jq '"\(.id) \(.node_id)"')
+          if [ -z "$id" ]; then echo "::error::posting the preview comment failed"; exit 1; fi
+          echo "id=$id" >> "$GITHUB_OUTPUT"
+          eval "$COLLAPSE_OLD_PREVIEW_COMMENTS"
+          collapse_old_preview_comments "$node" | sed 's/^/collapsed /'
 
   visual:
     needs: deploy
@@ -250,6 +319,102 @@ jobs:
           retention-days: 14
           if-no-files-found: ignore
 
+  # Lighthouse scores of the preview's home page, written into the preview-links
+  # comment (like the old Netlify comment). Informational: no thresholds. Mobile
+  # (Lighthouse's default), 3 runs, the run with the median performance score is
+  # reported, because one run's performance score swings a lot on CI runners.
+  # is-crawlable is skipped: previews are noindex on purpose, which would cost SEO
+  # a third of its score.
+  lighthouse:
+    needs: deploy
+    if: needs.deploy.outputs.preview_url != ''
+    runs-on: ubuntu-24.04 # has Google Chrome
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      pull-requests: write # the preview-links comment
+    env:
+      PREVIEW_URL: ${{ needs.deploy.outputs.preview_url }}
+      ROW_PREFIX: '| 🔦 Lighthouse |'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      # lighthouse is pinned exactly in package.json.
+      - name: Install Lighthouse
+        run: npm install --no-audit --no-fund
+
+      - name: Run Lighthouse
+        id: lh
+        env:
+          SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          mkdir -p lighthouse
+          curl -s -o /dev/null "$PREVIEW_URL/" || true # warm up the preview
+          for i in 1 2 3; do
+            npx lighthouse "$PREVIEW_URL/" --quiet \
+              --chrome-flags="--headless=new --no-sandbox" \
+              --only-categories=performance,accessibility,best-practices,seo \
+              --skip-audits=is-crawlable \
+              --output=json --output=html --output-path="lighthouse/run-$i" < /dev/null
+          done
+          median=$(for i in 1 2 3; do
+              echo "$(jq '.categories.performance.score // 0' "lighthouse/run-$i.report.json") $i"
+            done | sort -n | sed -n 2p | cut -d' ' -f2)
+          cp "lighthouse/run-$median.report.html" "lighthouse/lighthouse-report-${SHA:0:7}.html"
+          # 🟢 90-100, 🟠 50-89, 🔴 0-49: Lighthouse's own colour bands.
+          scores=$(jq -r '[.categories[] | .title as $t | ((.score // 0) * 100 | round) as $s
+              | "\(if $s >= 90 then "🟢" elif $s >= 50 then "🟠" else "🔴" end) **\($t)**: \($s)"] | join("<br>")' \
+            "lighthouse/run-$median.report.json")
+          echo "scores=$scores" >> "$GITHUB_OUTPUT"
+          jq -r --arg url "$PREVIEW_URL/" -f .github/lighthouse-summary.jq \
+            "lighthouse/run-$median.report.json" >> "$GITHUB_STEP_SUMMARY"
+
+      # archive: false keeps it a single .html file instead of a zip (upload-artifact v7+).
+      - name: Keep the report
+        id: report
+        uses: actions/upload-artifact@v7
+        with:
+          path: lighthouse/lighthouse-report-*.html
+          archive: false
+          retention-days: 14
+
+      - name: Put the scores in the preview-links comment
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          PR: ${{ github.event.number }}
+          SCORES: ${{ steps.lh.outputs.scores }}
+          REPORT_URL: ${{ steps.report.outputs.artifact-url }}
+          SUMMARY_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}#summary-${{ job.check_run_id }}
+          COMMENT_ID: ${{ needs.deploy.outputs.comment_id }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          if [ -n "$SCORES" ]; then
+            row="$ROW_PREFIX 1 path audited (\`/\`, mobile, median of 3 runs)<br>$SCORES<br>📊 [Metrics and audits below 90 (Actions job summary)]($SUMMARY_URL)"
+            if [ -n "$REPORT_URL" ]; then
+              row="$row<br>📄 [Full Lighthouse report (HTML file, downloads)]($REPORT_URL)"
+            fi
+            row="$row |"
+          else
+            row="$ROW_PREFIX failed, see the [workflow run]($RUN_URL) |"
+          fi
+          if [ -z "$COMMENT_ID" ]; then
+            echo "::warning::no preview-links comment to update"
+            exit 0
+          fi
+          # This run's own comment (the deploy job's), not whatever comment is newest.
+          id=$COMMENT_ID
+          body=$(gh api "repos/$REPO/issues/comments/$id" \
+            | jq -r --arg p "$ROW_PREFIX" --arg row "$row" \
+              '.body | split("\n") | map(if startswith($p) then $row else . end) | join("\n")')
+          gh api -X PATCH "repos/$REPO/issues/comments/$id" -f body="$body" > /dev/null
+
   cleanup:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
     runs-on: ubuntu-24.04
@@ -288,16 +453,18 @@ jobs:
           fi
           cat delete.log
 
-      - name: Say so in the preview-links comment
+      - name: Collapse the preview comments and say the preview is gone
         if: env.HAS_CF_TOKEN == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
           REPO: ${{ github.repository }}
           PR: ${{ github.event.number }}
         run: |
-          id=$(gh api "repos/$REPO/issues/$PR/comments" --paginate \
-            --jq ".[] | select(.user.login == \"github-actions[bot]\" and (.body | startswith(\"$PREVIEW_MARKER\"))) | .id" | head -1)
-          if [ -n "$id" ]; then
-            body=$(printf '%s\n~~Preview of this PR~~: deleted when the PR was closed.' "$PREVIEW_MARKER")
-            gh api -X PATCH "repos/$REPO/issues/comments/$id" -f body="$body" > /dev/null
+          # Collapse the preview comments (their links are dead now) and say so in a new
+          # one. Nothing to say if the PR never had a preview comment.
+          eval "$COLLAPSE_OLD_PREVIEW_COMMENTS"
+          collapsed=$(collapse_old_preview_comments)
+          if [ -n "$collapsed" ]; then
+            body=$(printf '%s\n🗑️ The preview of this PR was deleted when the PR was closed; the links in the earlier comments no longer work.' "$PREVIEW_MARKER")
+            gh api "repos/$REPO/issues/$PR/comments" -f body="$body" --jq .html_url
           fi

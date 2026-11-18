@@ -225,9 +225,10 @@ The site has two custom sections as examples:
 - Build the site with `bundle exec jekyll build` (Ruby from `.ruby-version`)
 - `npm install` (wrangler is pinned in `package.json`; `package-lock.json` is gitignored)
 - Push to `main`: `npx wrangler deploy` -> https://klaska.net
-- PR opened/pushed: `npx wrangler preview --name pr-<N>` (Workers Previews, open beta) -> a workers.dev preview, linked in one PR comment
+- PR opened/pushed: `npx wrangler preview --name pr-<N>` (Workers Previews, open beta) -> a workers.dev preview, linked in a new PR comment per deploy, earlier preview comments collapsed as outdated (preview, this commit, deploy log, and a QR code for phones: `/pr-preview-qr.png`, generated with the pinned `qrcode` package and published only inside the preview; the URL is predicted from `WORKERS_SUBDOMAIN` in `deploy.yml`)
 - PR touching the toolchain (templates, styles, config, deps, workflows): job `visual` screenshots every page on the preview and on production and fails on pixel differences (Playwright, `tests/visual.spec.js`)
-- PR closed or merged: `npx wrangler preview delete --name pr-<N>` and the comment says so
+- PR with a preview: job `lighthouse` runs Lighthouse (pinned in `package.json`) on the preview's home page, mobile, 3 runs, and writes the median run's scores into that run's comment, with links to the job summary (metrics + audits below 90, `.github/lighthouse-summary.jq`) and to the HTML report (an unzipped artifact). Informational only; `is-crawlable` is skipped because previews are noindex
+- PR closed or merged: `npx wrangler preview delete --name pr-<N>`, the preview comments are collapsed and a new comment says the preview is gone
 - Secrets: `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID` (same setup as floaty_territory_history)
 
 **Config:** `wrangler.jsonc` (assets-only Worker serving `_site/`, `404.html` for misses, custom domain klaska.net).
