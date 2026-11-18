@@ -3,12 +3,14 @@ name: Deploy to Cloudflare
 # Builds the Jekyll site and deploys _site/ to Cloudflare (assets-only Worker,
 # see wrangler.jsonc). No Netlify: previews are Cloudflare Workers Previews.
 #   push to main      -> production (klaska.net)
-#   PR opened/pushed  -> a Preview named pr-<N> on workers.dev, linked in one PR
-#                        comment; plus visual regression against production when
-#                        the toolchain changed (job `visual`), and Lighthouse
+#   PR opened/pushed  -> a Preview named pr-<N> on workers.dev, linked in a new PR
+#                        comment (earlier ones are collapsed as outdated); plus
+#                        visual regression against production when the toolchain
+#                        changed (job `visual`), and Lighthouse
 #                        scores of the preview's home page in the comment (job
 #                        `lighthouse`, informational, never blocks)
-#   PR closed/merged  -> the Preview is deleted and the comment says so
+#   PR closed/merged  -> the Preview is deleted, the preview comments are collapsed
+#                        and a new comment says so
 #
 # Secrets: CLOUDFLARE_API_TOKEN (deploy token: Workers Scripts Edit + Account
 # Settings Read on the account, Workers Routes Edit + Zone Read on klaska.net),
@@ -33,6 +35,27 @@ concurrency:
 
 env:
   PREVIEW_MARKER: '<!-- preview-links -->'
+  # Shell function used by the steps that post preview comments: collapses (GitHub
+  # "minimize", reason OUTDATED) every earlier preview comment on the PR, except the
+  # node ID given as $1, and prints the IDs it collapsed. Content stays readable.
+  COLLAPSE_OLD_PREVIEW_COMMENTS: |
+    collapse_old_preview_comments() {
+      gh api graphql --paginate -f owner="${REPO%/*}" -f name="${REPO#*/}" -F pr="$PR" -f query='
+        query($owner: String!, $name: String!, $pr: Int!, $endCursor: String) {
+          repository(owner: $owner, name: $name) { pullRequest(number: $pr) {
+            comments(first: 100, after: $endCursor) {
+              pageInfo { hasNextPage endCursor }
+              nodes { id isMinimized author { login } body } } } } }' \
+        --jq ".data.repository.pullRequest.comments.nodes[]
+          | select(.author.login == \"github-actions\" and (.isMinimized | not)
+                   and (.body | startswith(\"$PREVIEW_MARKER\"))) | .id" |
+      while read -r node; do
+        [ "$node" = "${1:-}" ] && continue
+        gh api graphql -f id="$node" -f query='mutation($id: ID!) {
+          minimizeComment(input: {subjectId: $id, classifier: OUTDATED}) { minimizedComment { isMinimized } } }' > /dev/null
+        echo "$node"
+      done
+    }
 
 jobs:
   deploy:
@@ -47,6 +70,7 @@ jobs:
       HAS_CF_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN != '' }}
     outputs:
       preview_url: ${{ steps.preview.outputs.url }}
+      comment_id: ${{ steps.comment.outputs.id }}
       toolchain_changed: ${{ steps.changes.outputs.toolchain }}
 
     steps:
@@ -172,7 +196,10 @@ jobs:
           echo "qr_url=$url/$QR_FILE" >> "$GITHUB_OUTPUT"
           printf 'Preview: %s\nThis commit: %s\n' "$url" "$commit_url" >> "$GITHUB_STEP_SUMMARY"
 
+      # A new comment per deploy, so each one keeps the links of its own commit; the
+      # earlier ones are collapsed as outdated (still readable when expanded).
       - name: Post the preview links on the PR
+        id: comment
         if: steps.preview.outputs.url != ''
         env:
           GH_TOKEN: ${{ github.token }}
@@ -184,10 +211,10 @@ jobs:
           QR_URL: ${{ steps.preview.outputs.qr_url }}
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
-          # The body must start with PREVIEW_MARKER: this step and the cleanup job find the comment by it.
+          # The body must start with PREVIEW_MARKER: that is how earlier preview comments are found.
           body=$(cat <<EOF
           $PREVIEW_MARKER
-          ### ✅ Preview of this PR is ready
+          ### ✅ Preview of \`${SHA:0:7}\` is ready
 
           | | |
           |:-:|---|
@@ -200,13 +227,11 @@ jobs:
           Production is unchanged until the PR is merged. The preview is deleted when the PR is closed.
           EOF
           )
-          id=$(gh api "repos/$REPO/issues/$PR/comments" --paginate \
-            --jq ".[] | select(.user.login == \"github-actions[bot]\" and (.body | startswith(\"$PREVIEW_MARKER\"))) | .id" | head -1)
-          if [ -n "$id" ]; then
-            gh api -X PATCH "repos/$REPO/issues/comments/$id" -f body="$body" > /dev/null
-          else
-            gh pr comment "$PR" --repo "$REPO" --body "$body"
-          fi
+          read -r id node < <(gh api "repos/$REPO/issues/$PR/comments" -f body="$body" --jq '"\(.id) \(.node_id)"')
+          if [ -z "$id" ]; then echo "::error::posting the preview comment failed"; exit 1; fi
+          echo "id=$id" >> "$GITHUB_OUTPUT"
+          eval "$COLLAPSE_OLD_PREVIEW_COMMENTS"
+          collapse_old_preview_comments "$node" | sed 's/^/collapsed /'
 
   visual:
     needs: deploy
@@ -361,6 +386,7 @@ jobs:
           PR: ${{ github.event.number }}
           SCORES: ${{ steps.lh.outputs.scores }}
           REPORT_URL: ${{ steps.report.outputs.artifact-url }}
+          COMMENT_ID: ${{ needs.deploy.outputs.comment_id }}
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
           if [ -n "$SCORES" ]; then
@@ -368,12 +394,12 @@ jobs:
           else
             row="$ROW_PREFIX failed, see the [deploy log]($RUN_URL) |"
           fi
-          id=$(gh api "repos/$REPO/issues/$PR/comments" --paginate \
-            --jq ".[] | select(.user.login == \"github-actions[bot]\" and (.body | startswith(\"$PREVIEW_MARKER\"))) | .id" | head -1)
-          if [ -z "$id" ]; then
+          if [ -z "$COMMENT_ID" ]; then
             echo "::warning::no preview-links comment to update"
             exit 0
           fi
+          # This run's own comment (the deploy job's), not whatever comment is newest.
+          id=$COMMENT_ID
           body=$(gh api "repos/$REPO/issues/comments/$id" \
             | jq -r --arg p "$ROW_PREFIX" --arg row "$row" \
               '.body | split("\n") | map(if startswith($p) then $row else . end) | join("\n")')
@@ -417,16 +443,18 @@ jobs:
           fi
           cat delete.log
 
-      - name: Say so in the preview-links comment
+      - name: Collapse the preview comments and say the preview is gone
         if: env.HAS_CF_TOKEN == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
           REPO: ${{ github.repository }}
           PR: ${{ github.event.number }}
         run: |
-          id=$(gh api "repos/$REPO/issues/$PR/comments" --paginate \
-            --jq ".[] | select(.user.login == \"github-actions[bot]\" and (.body | startswith(\"$PREVIEW_MARKER\"))) | .id" | head -1)
-          if [ -n "$id" ]; then
-            body=$(printf '%s\n~~Preview of this PR~~: deleted when the PR was closed.' "$PREVIEW_MARKER")
-            gh api -X PATCH "repos/$REPO/issues/comments/$id" -f body="$body" > /dev/null
+          # Collapse the preview comments (their links are dead now) and say so in a new
+          # one. Nothing to say if the PR never had a preview comment.
+          eval "$COLLAPSE_OLD_PREVIEW_COMMENTS"
+          collapsed=$(collapse_old_preview_comments)
+          if [ -n "$collapsed" ]; then
+            body=$(printf '%s\n🗑️ The preview of this PR was deleted when the PR was closed; the links in the earlier comments no longer work.' "$PREVIEW_MARKER")
+            gh api "repos/$REPO/issues/$PR/comments" -f body="$body" --jq .html_url
           fi
