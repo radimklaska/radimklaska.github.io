@@ -6,7 +6,6 @@ vendor
 
 # Visual regression tooling
 node_modules/
-package-lock.json
 test-results/
 playwright-report/
 visual-diffs/
@@ -14,3 +13,5 @@ tests/pages.json
 
 # Cloudflare wrangler local state
 .wrangler/
+visual-results/
+visual-report/

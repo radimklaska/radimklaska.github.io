@@ -223,11 +223,11 @@ The site has two custom sections as examples:
 
 **Workflow:** `.github/workflows/deploy.yml`
 - Build the site with `bundle exec jekyll build` (Ruby from `.ruby-version`)
-- `npm install` (wrangler is pinned in `package.json`; `package-lock.json` is gitignored)
+- `npm ci` (every tool pinned exactly in `package.json`, `package-lock.json` committed; updates take only releases at least 7 days old: `npm install --save-dev --save-exact --before="$(date -u -d '-7 days' +%Y-%m-%dT%H:%M:%SZ)" <pkg>@latest`)
 - Push to `main`: `npx wrangler deploy` -> https://klaska.net
 - PR opened/pushed: `npx wrangler preview --name pr-<N>` (Workers Previews, open beta) -> a workers.dev preview, linked in a new PR comment per deploy, earlier preview comments collapsed as outdated (preview, this commit, deploy log, and a QR code for phones: `/pr-preview-qr.png`, generated with the pinned `qrcode` package and published only inside the preview; the URL is predicted from `WORKERS_SUBDOMAIN` in `deploy.yml`)
-- PR touching the toolchain (templates, styles, config, deps, workflows): job `visual` screenshots every page on the preview and on production and fails on pixel differences (Playwright, `tests/visual.spec.js`)
-- PR with a preview: job `lighthouse` runs Lighthouse (pinned in `package.json`) on the preview's home page, mobile, 3 runs, and writes the median run's scores into that run's comment, with links to the job summary (metrics + audits below 90, `.github/lighthouse-summary.jq`) and to the HTML report (an unzipped artifact). Informational only; `is-crawlable` is skipped because previews are noindex
+- PR touching the toolchain (templates, styles, config, deps, workflows): job `visual` screenshots every page on the preview and on production (Playwright, `tests/visual.spec.mjs`) and fails when more than 0.2 % of a page's pixels differ or more than 10 within any 16x16 square. `tests/visual-report.mjs` writes the job summary and, when pages differ, a self-contained diffs page (unzipped artifact, opens in the browser). On content-only PRs it does not run
+- PR with a preview: job `lighthouse` runs Lighthouse on the preview's home page (mobile, 3 runs, median). Job `comment` then writes the Visual and Lighthouse rows into that deploy's preview comment (one writer, so the parallel jobs cannot overwrite each other). Same setup as https://cfsite.klaska.net (repo radimklaska/cfsite): copy improvements from there
 - PR closed or merged: `npx wrangler preview delete --name pr-<N>`, the preview comments are collapsed and a new comment says the preview is gone
 - Secrets: `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID` (same setup as floaty_territory_history)
 

@@ -16,4 +16,4 @@ Simple Jekyll site based on https://github.com/sharu725/online-cv
 * `git clone git@github.com:radimklaska/radimklaska.github.io.git`
 * `cd radimklaska.github.io`
 * `bundle exec jekyll serve`
-* With Cloudflare's redirects and 404 handling: `npm install && bundle exec jekyll build && npx wrangler dev`
+* With Cloudflare's redirects and 404 handling: `npm ci && bundle exec jekyll build && npx wrangler dev`

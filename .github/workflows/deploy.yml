@@ -6,9 +6,11 @@ name: Deploy to Cloudflare
 #   PR opened/pushed  -> a Preview named pr-<N> on workers.dev, linked in a new PR
 #                        comment (earlier ones are collapsed as outdated); plus
 #                        visual regression against production when the toolchain
-#                        changed (job `visual`), and Lighthouse
-#                        scores of the preview's home page in the comment (job
-#                        `lighthouse`, informational, never blocks)
+#                        changed (job `visual`) and Lighthouse scores of the
+#                        preview's home page (job `lighthouse`, informational);
+#                        job `comment` then fills both results into that comment.
+#                        Same setup as https://cfsite.klaska.net (minus the
+#                        toolchain gate on `visual`, which is specific to this site)
 #   PR closed/merged  -> the Preview is deleted, the preview comments are collapsed
 #                        and a new comment says so
 #
@@ -75,7 +77,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           # On a PR this is the merge commit; its first parent is the base branch,
           # so HEAD^1..HEAD is exactly what the PR changes.
@@ -94,14 +96,13 @@ jobs:
         run: |
           changed=$(git diff --name-only HEAD^1 HEAD)
           echo "$changed"
-          if echo "$changed" | grep -qE '^(Gemfile|Gemfile\.lock|\.ruby-version|_config\.yml|_includes/|_layouts/|_plugins/|_sass/|assets/css/|package\.json|playwright\.config\.js|tests/|wrangler\.jsonc|_redirects|\.github/workflows/)'; then
+          if echo "$changed" | grep -qE '^(Gemfile|Gemfile\.lock|package-lock\.json|\.ruby-version|_config\.yml|_includes/|_layouts/|_plugins/|_sass/|assets/css/|package\.json|playwright\.config\.js|tests/|wrangler\.jsonc|_redirects|\.github/workflows/)'; then
             echo "toolchain=true" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version-file: '.ruby-version'
           bundler-cache: true
 
       - name: Build with Jekyll
@@ -117,21 +118,22 @@ jobs:
 
       - name: Keep the build for visual regression
         if: steps.changes.outputs.toolchain == 'true'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: site
           path: _site/
           include-hidden-files: true
           retention-days: 1
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: 22
+          cache: npm
 
       # package-lock.json is gitignored here; wrangler is pinned exactly in package.json.
       - name: Install wrangler
         if: env.IS_PR != 'true' || env.HAS_CF_TOKEN == 'true'
-        run: npm install --no-audit --no-fund
+        run: npm ci --no-audit --no-fund
 
       - name: Deploy to production
         if: env.IS_PR != 'true'
@@ -223,7 +225,8 @@ jobs:
           | 🔨 This commit | \`${SHA:0:7}\`: ${COMMIT_URL:-n/a} |
           | 🔍 Deploy log | [Workflow run $RUN_ID: build, deploy, visual, Lighthouse]($RUN_URL) |
           | 📱 Preview on mobile | <details><summary>Toggle QR code...</summary><br><img src="$QR_URL" width="150" height="150" alt="QR code of $URL"><br><em>Use your smartphone camera to open the preview.</em></details> |
-          | 🔦 Lighthouse | running... (the \`lighthouse\` job fills this in) |
+          | 🖼️ Visual | running... |
+          | 🔦 Lighthouse | running... |
 
           Production is unchanged until the PR is merged. The preview is deleted when the PR is closed.
           EOF
@@ -242,12 +245,14 @@ jobs:
     env:
       PROD_URL: https://klaska.net
       PREVIEW_URL: ${{ needs.deploy.outputs.preview_url }}
+    outputs:
+      row: ${{ steps.row.outputs.row }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Get the build
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: site
           path: _site
@@ -296,31 +301,74 @@ jobs:
           echo "::error::Preview $PREVIEW_URL did not answer 200 within ~5 minutes."
           exit 1
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: 22
+          cache: npm
 
       - name: Install dependencies
         run: |
-          npm install --no-audit --no-fund
+          npm ci --no-audit --no-fund
           npx playwright install --with-deps chromium
 
       - name: Compare preview against production
+        id: compare
         run: npx playwright test
 
-      - name: Upload diffs
-        if: failure()
-        uses: actions/upload-artifact@v4
+      # Job summary table, and one self-contained HTML page with preview, production and
+      # diff side by side for every page that differs (tests/visual-report.mjs).
+      - name: Build the visual report
+        id: report
+        if: always() && steps.compare.outcome != 'skipped'
+        env:
+          SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          node tests/visual-report.mjs
+          cat visual-report/summary.md >> "$GITHUB_STEP_SUMMARY"
+          echo "file=$(jq -r .file visual-report/result.json)" >> "$GITHUB_OUTPUT"
+
+      # Unzipped (archive: false), so GitHub opens the page in the browser.
+      - name: Keep the visual diffs page
+        id: upload
+        if: always() && steps.report.outputs.file != ''
+        uses: actions/upload-artifact@v7
         with:
-          name: visual-diffs
-          path: |
-            visual-diffs/
-            playwright-report/
+          path: visual-report/${{ steps.report.outputs.file }}
+          archive: false
+          retention-days: 14
+
+      - name: Keep the Playwright report
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: playwright-report
+          path: playwright-report/
           retention-days: 14
           if-no-files-found: ignore
 
-  # Lighthouse scores of the preview's home page, written into the preview-links
-  # comment (like the old Netlify comment). Informational: no thresholds. Mobile
+      - name: Row for the preview comment
+        id: row
+        if: always()
+        env:
+          DIFFS_URL: ${{ steps.upload.outputs.artifact-url }}
+          SUMMARY_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}#summary-${{ job.check_run_id }}
+        run: |
+          r=visual-report/result.json
+          total=$(jq -r '.total // 0' "$r" 2>/dev/null || echo 0)
+          if [ "$total" = 0 ]; then
+            text="⚠️ no result, see the [job summary]($SUMMARY_URL)"
+          elif [ "$(jq '.failed | length' "$r")" = 0 ]; then
+            text="✅ all $total pages match production"
+          else
+            pages=$(jq -r '[.failed[] | "`\(.path)` \(.percent)"] | join(", ")' "$r")
+            text="❌ $(jq '.failed | length' "$r") of $total differ: $pages"
+            [ -n "$DIFFS_URL" ] && text="$text · [view diffs]($DIFFS_URL)"
+            text="$text · [summary]($SUMMARY_URL)"
+          fi
+          echo "row=| 🖼️ Visual | $text |" >> "$GITHUB_OUTPUT"
+
+  # Lighthouse scores of the preview's home page, for the preview-links comment (job
+  # `comment` writes them). Informational: no thresholds. Mobile
   # (Lighthouse's default), 3 runs, the run with the median performance score is
   # reported, because one run's performance score swings a lot on CI runners.
   # is-crawlable is skipped: previews are noindex on purpose, which would cost SEO
@@ -330,23 +378,22 @@ jobs:
     if: needs.deploy.outputs.preview_url != ''
     runs-on: ubuntu-24.04 # has Google Chrome
     timeout-minutes: 10
-    permissions:
-      contents: read
-      pull-requests: write # the preview-links comment
     env:
       PREVIEW_URL: ${{ needs.deploy.outputs.preview_url }}
-      ROW_PREFIX: '| 🔦 Lighthouse |'
+    outputs:
+      row: ${{ steps.row.outputs.row }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: 22
+          cache: npm
 
       # lighthouse is pinned exactly in package.json.
       - name: Install Lighthouse
-        run: npm install --no-audit --no-fund
+        run: npm ci --no-audit --no-fund
 
       - name: Run Lighthouse
         id: lh
@@ -383,37 +430,54 @@ jobs:
           archive: false
           retention-days: 14
 
-      - name: Put the scores in the preview-links comment
+      - name: Row for the preview comment
+        id: row
         if: always()
         env:
-          GH_TOKEN: ${{ github.token }}
-          REPO: ${{ github.repository }}
-          PR: ${{ github.event.number }}
           SCORES: ${{ steps.lh.outputs.scores }}
           REPORT_URL: ${{ steps.report.outputs.artifact-url }}
           SUMMARY_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}#summary-${{ job.check_run_id }}
-          COMMENT_ID: ${{ needs.deploy.outputs.comment_id }}
-          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
           if [ -n "$SCORES" ]; then
-            row="$ROW_PREFIX 1 path audited (\`/\`, mobile, median of 3 runs)<br>$SCORES<br>📊 [Metrics and audits below 90 (Actions job summary)]($SUMMARY_URL)"
-            if [ -n "$REPORT_URL" ]; then
-              row="$row<br>📄 [Full Lighthouse report (HTML file, downloads)]($REPORT_URL)"
-            fi
-            row="$row |"
+            text="1 path audited (\`/\`, mobile, median of 3 runs)<br>$SCORES<br>📊 [Metrics and audits below 90 (job summary)]($SUMMARY_URL)"
+            [ -n "$REPORT_URL" ] && text="$text<br>📄 [Full Lighthouse report (opens in the browser)]($REPORT_URL)"
           else
-            row="$ROW_PREFIX failed, see the [workflow run]($RUN_URL) |"
+            text="⚠️ failed, see the [job summary]($SUMMARY_URL)"
           fi
-          if [ -z "$COMMENT_ID" ]; then
-            echo "::warning::no preview-links comment to update"
-            exit 0
+          echo "row=| 🔦 Lighthouse | $text |" >> "$GITHUB_OUTPUT"
+
+  # The only job that edits a preview comment after the deploy job posted it, so the
+  # visual and Lighthouse rows (their jobs run in parallel) never overwrite each other.
+  comment:
+    needs: [deploy, visual, lighthouse]
+    if: always() && needs.deploy.outputs.comment_id != ''
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      pull-requests: write # the preview-links comment
+    steps:
+      - name: Fill in the result rows
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          COMMENT_ID: ${{ needs.deploy.outputs.comment_id }}
+          VISUAL_ROW: ${{ needs.visual.outputs.row }}
+          VISUAL_RESULT: ${{ needs.visual.result }}
+          LIGHTHOUSE_ROW: ${{ needs.lighthouse.outputs.row }}
+          LIGHTHOUSE_RESULT: ${{ needs.lighthouse.result }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          fallback() { echo "| $1 | ⚠️ $2, see the [workflow run]($RUN_URL) |"; }
+          if [ "$VISUAL_RESULT" = skipped ]; then
+            VISUAL_ROW="| 🖼️ Visual | ➖ not run: only content changed (it runs when the toolchain changes) |"
           fi
-          # This run's own comment (the deploy job's), not whatever comment is newest.
-          id=$COMMENT_ID
-          body=$(gh api "repos/$REPO/issues/comments/$id" \
-            | jq -r --arg p "$ROW_PREFIX" --arg row "$row" \
-              '.body | split("\n") | map(if startswith($p) then $row else . end) | join("\n")')
-          gh api -X PATCH "repos/$REPO/issues/comments/$id" -f body="$body" > /dev/null
+          [ -n "$VISUAL_ROW" ] || VISUAL_ROW=$(fallback '🖼️ Visual' "$VISUAL_RESULT")
+          [ -n "$LIGHTHOUSE_ROW" ] || LIGHTHOUSE_ROW=$(fallback '🔦 Lighthouse' "$LIGHTHOUSE_RESULT")
+          body=$(gh api "repos/$REPO/issues/comments/$COMMENT_ID" \
+            | jq -r --arg v "$VISUAL_ROW" --arg l "$LIGHTHOUSE_ROW" '.body | split("\n")
+                | map(if startswith("| 🖼️ Visual |") then $v elif startswith("| 🔦 Lighthouse |") then $l else . end)
+                | join("\n")')
+          gh api -X PATCH "repos/$REPO/issues/comments/$COMMENT_ID" -f body="$body" > /dev/null
 
   cleanup:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
@@ -427,16 +491,17 @@ jobs:
     steps:
       - name: Checkout
         if: env.HAS_CF_TOKEN == 'true'
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         if: env.HAS_CF_TOKEN == 'true'
         with:
           node-version: 22
+          cache: npm
 
       - name: Install wrangler
         if: env.HAS_CF_TOKEN == 'true'
-        run: npm install --no-audit --no-fund
+        run: npm ci --no-audit --no-fund
 
       - name: Delete the PR preview
         if: env.HAS_CF_TOKEN == 'true'
