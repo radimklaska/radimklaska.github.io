@@ -510,8 +510,11 @@ support:
         link: /
         external: false
         description: >
-          The best support is paid work. Drupal backend development, security
-          updates and DevOps - see my profile and get in touch.
+          The best support is paid work. I build best-practice Drupal websites,
+          backed by solid CI/CD pipelines, fast security updates and automated
+          tests, and guarded by granular caching. On the side, a lot of home
+          automation, working with (and fixing) all kinds of hardware, well
+          beyond IoT, and physical security as a hobby.
 
       - title: GitHub Sponsors
         link: https://github.com/sponsors/radimklaska
