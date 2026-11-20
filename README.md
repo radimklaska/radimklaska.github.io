@@ -7,7 +7,7 @@ Simple Jekyll site based on https://github.com/sharu725/online-cv
 ## Visit the site
 
 * Production domain: https://klaska.net
-* Hosting: Cloudflare Worker (see `wrangler.jsonc`), deployed by `.github/workflows/deploy.yml`
+* Hosting: Cloudflare Worker (see `wrangler.jsonc`), deployed by `.github/workflows/deploy.yml`; www.klaska.net redirects to klaska.net through a second Worker in `www-redirect/`
 * https://radimklaska.github.io/ forwards to klaska.net (GitHub Pages, `.github/workflows/github-io-redirect.yml`)
 
 ## Run site locally

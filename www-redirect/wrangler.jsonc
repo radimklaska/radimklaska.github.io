@@ -1,0 +1,19 @@
+// Cloudflare Worker that redirects www.klaska.net to klaska.net (301, path and query
+// kept). A separate Worker, so the site's own Worker stays assets-only and only www
+// requests run code. Deployed by .github/workflows/deploy.yml after the site. Same
+// setup as https://cfsite.klaska.net/hosting/#www
+{
+  "$schema": "../node_modules/wrangler/config-schema.json",
+  "name": "klaska-net-www",
+  "main": "index.js",
+  // Pinned, a few days old (see the site's wrangler.jsonc).
+  "compatibility_date": "2026-11-15",
+
+  // Only on the www custom domain: no workers.dev copy, no previews.
+  "workers_dev": false,
+  "preview_urls": false,
+
+  // The deploy creates the DNS record and the certificate, and fails (error 100117)
+  // if the hostname already has a DNS record. Delete that one first.
+  "routes": [{ "pattern": "www.klaska.net", "custom_domain": true }]
+}

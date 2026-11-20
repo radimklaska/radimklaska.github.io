@@ -6,7 +6,7 @@ This is a personal portfolio/CV website built with Jekyll and deployed to Cloudf
 
 **Live Sites:**
 - Production: https://klaska.net
-- Hosting: Cloudflare Worker `klaska-net` (custom domain klaska.net). https://radimklaska.github.io/ only forwards to klaska.net (`.github/workflows/github-io-redirect.yml`).
+- Hosting: Cloudflare Worker `klaska-net` (custom domain klaska.net); Worker `klaska-net-www` (`www-redirect/`) 301-redirects www.klaska.net to it. https://radimklaska.github.io/ only forwards to klaska.net (`.github/workflows/github-io-redirect.yml`).
 
 **Base Template:** Modified version of [online-cv](https://github.com/sharu725/online-cv) by Xiaoying Riley
 
@@ -91,6 +91,7 @@ radimklaska.github.io/
 ├── .ruby-version         # Ruby version specification
 ├── .gitignore            # Git ignore rules
 ├── wrangler.jsonc        # Cloudflare Worker config (custom domain klaska.net)
+├── www-redirect/         # Worker klaska-net-www: www.klaska.net -> klaska.net (301)
 ├── _redirects            # 301s, incl. former klaska.net/<repo>/ project sites
 └── site.webmanifest      # PWA manifest
 ```
@@ -233,6 +234,11 @@ The site has two custom sections as examples:
 - Secrets: `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID` (same setup as floaty_territory_history)
 
 **Config:** `wrangler.jsonc` (assets-only Worker serving `_site/`, `404.html` for misses, custom domain klaska.net).
+
+**www:** `www-redirect/` is a second, tiny Worker (`klaska-net-www`) on the custom domain www.klaska.net that
+301-redirects to the same path and query on klaska.net (`_redirects` cannot match hostnames). The production job
+deploys it right after the site (`--config www-redirect/wrangler.jsonc`); it is excluded from the Jekyll build.
+Never create a DNS record for klaska.net or www.klaska.net by hand: the deploy creates them (error 100117 otherwise).
 Analytics: Cloudflare Web Analytics, injected by the klaska.net zone (no tag in the templates).
 
 **Redirects:** `_redirects` (listed in `include` in `_config.yml`, because Jekyll skips `_` files). The former
